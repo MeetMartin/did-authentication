@@ -1,0 +1,8 @@
+/node_modules/
+.idea
+.sonarlint
+.vscode
+.DS_Store
+**/coverage/
+dist
+.netlify
