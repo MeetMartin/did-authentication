@@ -1,0 +1,40 @@
+{
+  "name": "react-hooks",
+  "version": "1.0.0",
+  "description": "5 Easy Steps To Abandon Redux For The Remarkable React Hooks",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack serve --progress --open --mode development --config webpack.development.config.js",
+    "maintain": "npm install & npm update && npm audit fix --force",
+    "functions": "nodemon -r @babel/register -w lambda lambda/functions.js",
+    "build-quote": "webpack --progress --mode production --config webpack.functions.quote.config.js",
+    "build-web": "webpack --progress --mode production --config webpack.production.config.js",
+    "build": "npm run build-web",
+    "build-all": "npm run build-web && npm run build-quote"
+  },
+  "author": "Martin Novak",
+  "license": "ISC",
+  "devDependencies": {
+    "@7urtle/lambda": "^1.2.17",
+    "@7urtle/logger": "^1.1.4",
+    "@7urtle/server": "^1.0.13",
+    "@babel/core": "^7.14.5",
+    "@babel/node": "^7.14.5",
+    "@babel/preset-env": "^7.14.5",
+    "@babel/preset-react": "^7.14.5",
+    "axios": "^0.21.1",
+    "babel-loader": "^8.2.2",
+    "babel-plugin-styled-components": "^1.13.2",
+    "clean-webpack-plugin": "^4.0.0-alpha.0",
+    "copy-webpack-plugin": "^9.0.1",
+    "html-loader": "^2.1.2",
+    "html-webpack-plugin": "^5.3.2",
+    "nodemon": "^2.0.12",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "styled-components": "^5.3.0",
+    "webpack": "^5.45.1",
+    "webpack-cli": "^4.7.2",
+    "webpack-dev-server": "^3.11.2"
+  }
+}
