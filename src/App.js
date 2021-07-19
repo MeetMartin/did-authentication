@@ -1,10 +1,19 @@
 import React from 'react';
-import styled from 'styled-components';
+import { createGlobalStyle } from 'styled-components';
 
 import HomePage from './pages/HomePage';
 
-const BaseStyles = styled.span`
-    color: #000;
+const GlobalStyle  = createGlobalStyle`
+    html {
+        height: 100%;
+        @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+        font-family: 'Roboto', sans-serif;
+    }
+    body {
+        background: linear-gradient(135deg, #553D67, #99738E);
+        background-repeat: no-repeat;
+        color: #FFF;
+    }
 `;
 
 /**
@@ -13,9 +22,10 @@ const BaseStyles = styled.span`
  */
 const App = () => {
     return (
-        <BaseStyles>
+        <>
+            <GlobalStyle />
             <HomePage />
-        </BaseStyles>
+        </>
     );
 };
 

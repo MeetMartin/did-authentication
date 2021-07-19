@@ -1,4 +1,5 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
 
@@ -8,6 +9,7 @@ module.exports = {
     entry: [
         './index.js'
     ],
+    devtool: 'source-map',
     module: {
         rules: [
             {
@@ -15,9 +17,7 @@ module.exports = {
                 sideEffects: false,
                 exclude: /node_modules/,
                 use: [
-                    {
-                        loader: 'babel-loader'
-                    }
+                    'babel-loader'
                 ]
             },
             {
@@ -74,7 +74,15 @@ module.exports = {
     },
     plugins: [
         new webpack.ProgressPlugin(),
-        new HtmlWebpackPlugin({template: './index.html'})
+        new HtmlWebpackPlugin({template: './index.html'}),
+        new CopyPlugin({
+            patterns: [
+                { from: '../favicon.ico', to: '../dist' }
+            ],
+            options: {
+                concurrency: 100,
+            }
+        }),
     ],
     devServer: {
         contentBase: path.join(__dirname, 'src'),

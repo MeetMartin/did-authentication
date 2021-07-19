@@ -94,7 +94,8 @@ module.exports = {
         new webpack.ProgressPlugin(),
         new CopyPlugin({
             patterns: [
-                { from: '../_redirects', to: '../dist' }
+                { from: '../_redirects', to: '../dist' },
+                { from: '../favicon.ico', to: '../dist' }
             ],
             options: {
                 concurrency: 100,

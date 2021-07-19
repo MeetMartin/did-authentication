@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "webpack serve --progress --open --mode development --config webpack.development.config.js",
     "maintain": "npm install & npm update && npm audit fix --force",
+    "setup-did": "nodemon -r @babel/register -r dotenv/config ./DIDSetup.js",
     "functions": "nodemon -r @babel/register -w lambda lambda/functions.js",
     "build-quote": "webpack --progress --mode production --config webpack.functions.quote.config.js",
     "build-web": "webpack --progress --mode production --config webpack.production.config.js",
@@ -27,6 +28,7 @@
     "babel-plugin-styled-components": "^1.13.2",
     "clean-webpack-plugin": "^4.0.0-alpha.0",
     "copy-webpack-plugin": "^9.0.1",
+    "dotenv": "^10.0.0",
     "html-loader": "^2.1.2",
     "html-webpack-plugin": "^5.3.2",
     "nodemon": "^2.0.12",
