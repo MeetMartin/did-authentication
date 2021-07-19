@@ -6,3 +6,4 @@
 **/coverage/
 dist
 .netlify
+.env
