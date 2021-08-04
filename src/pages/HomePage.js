@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import AuthenticationQRCode from '../components/AuthenticationQRCode';
+
 const Wrapper = styled.div`
     max-width: 1000px;
     margin: 100px auto;
@@ -14,6 +16,7 @@ const HomePage = () => {
                 Decentralized Identifiers Are Here!
             </h1>
             <p>Something</p>
+            <AuthenticationQRCode />
         </Wrapper>
     );
 };

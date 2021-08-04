@@ -4,12 +4,12 @@ const path = require('path');
 
 module.exports = {
     mode: 'production',
-    context: path.resolve(__dirname, 'lambda/did'),
+    context: path.resolve(__dirname, './did'),
     entry: [
         './did.js'
     ],
     output: {
-        path: path.resolve(__dirname, 'functions/did'),
+        path: path.resolve(__dirname, '../functions/did'),
         filename: 'did.js',
         libraryTarget: 'commonjs'
     },

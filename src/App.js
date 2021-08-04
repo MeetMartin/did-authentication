@@ -1,6 +1,7 @@
 import React from 'react';
 import { createGlobalStyle } from 'styled-components';
 
+import { StoreProvider } from './store/StoreContext';
 import HomePage from './pages/HomePage';
 
 const GlobalStyle  = createGlobalStyle`
@@ -22,10 +23,10 @@ const GlobalStyle  = createGlobalStyle`
  */
 const App = () => {
     return (
-        <>
+        <StoreProvider>
             <GlobalStyle />
             <HomePage />
-        </>
+        </StoreProvider>
     );
 };
 
