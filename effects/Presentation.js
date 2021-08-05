@@ -48,7 +48,7 @@ const createPresentationRequest = payload =>
             `https://${payload.tenant}/v1/presentations/requests`,
             {
                 "challenge": `presentation-request-${shortid.generate()}`,
-                "did": payload.verifierDID,
+                "did": payload.did,
                 "templateId": payload.templateID,
                 "expiresTime": 1638836401000,
                 "callbackUrl": payload.presentationCallbackURL

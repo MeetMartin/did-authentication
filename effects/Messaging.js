@@ -8,7 +8,7 @@ const createJWS = payload =>
             `https://${payload.tenant}/v1/messaging/sign`,
             {
                 "didUrl": payload.didUrl,
-                "payload": payload.requestPayload
+                "payload": payload.request
             },
             {
                 headers: {

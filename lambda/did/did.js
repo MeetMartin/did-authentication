@@ -3,6 +3,8 @@ import logger from '../../src/logger';
 
 import { requestMATTRAccessToken } from '../../effects/MATTR';
 import { createPresentationRequest } from '../../effects/Presentation';
+import { readDID } from '../../effects/DID';
+import { createJWS } from '../../effects/Messaging';
 
 const getValueFromEnv = key => isNothing(process.env[key]) ? Either.Failure(`process.env.${key} is Nothing.`) : Either.Success(process.env[key]);
 
@@ -14,7 +16,7 @@ const error500Response = {
 const getPresentationCallbackURL = () =>
   (envEither =>
     envEither.isFailure()
-    ? getValueFromEnv('ngrok')
+    ? map(url => `${url}/did/callback`)(getValueFromEnv('ngrok'))
     : envEither
   )(getValueFromEnv('PRESENTATION_CALLBACK_URL'));
 
@@ -33,7 +35,7 @@ const valuesToPayload = values => ({
     clientSecret: values[1],
     tenant: values[2],
     templateID: values[3],
-    verifierDID: values[4],
+    did: values[4],
     presentationCallbackURL: values[5]
   });
 
@@ -60,7 +62,40 @@ const getPayloadWithPresentationRequest = payloadEither =>
   )
   (payloadEither);
 
+const getPayloadWithDIDURL = payloadEither =>
+  either
+  (() => AsyncEffect.of(_ => resolve => resolve(payloadEither)))
+  (payload =>
+    map
+    (result =>
+      isNothing(result.data?.didDocument?.authentication[0])
+      ? Either.Failure('Verifier DID URL is Nothing.')
+      : Either.Success({...payload, didUrl: result.data.didDocument.authentication[0]})
+    )
+    (readDID(payload))
+  )
+  (payloadEither);
+
+const getPayloadWithJWS = payloadEither =>
+  either
+  (() => AsyncEffect.of(_ => resolve => resolve(payloadEither)))
+  (payload =>
+    map
+    (result =>
+      isNothing(result.data)
+      ? Either.Failure('JWS is Nothing.')
+      : Either.Success({...payload, jws: result.data})
+    )
+    (createJWS(payload))
+  )
+  (payloadEither);
+
+const getJWSURL = payload => `https://${payload.tenant}/?request=${payload.jws}`;
+
 const getAuthenticationEffect = compose(
+  map(map(map(getJWSURL))), // => Either(AsyncEffect(Either))
+  map(flatMap(getPayloadWithJWS)), // => Either(AsyncEffect(Either))
+  map(flatMap(getPayloadWithDIDURL)), // => Either(AsyncEffect(Either))
   map(flatMap(getPayloadWithPresentationRequest)), // => Either(AsyncEffect(Either))
   map(getPayloadWithAccessToken), // => Either(AsyncEffect(Either))
   map(valuesToPayload), // => Either
@@ -74,29 +109,37 @@ const triggerAuthentication = () =>
   (errors => logger.error(errorsToError(errors)) && error500Response)
   (effect =>
     effect.trigger
-    (error => logger.error(`${error.response.status} ${error.response.statusText}`, error.response.data) && error500Response)
+    (error => logger.error(`${error.response.status} ${error.response.statusText} ${error.response.config.url} ${error.response.data?.details[0]?.msg ? error.response.data.details[0].msg : ''}`) && error500Response) 
     (
       either
       (errors => logger.error(errorsToError(errors)) && error500Response)
       (result => ({
-        statusCode: 200,
-        body: JSON.stringify(result)
+        statusCode: 301,
+        location: result
       }))
     )
   )
   (getAuthenticationEffect());
+
+const processCallback = request => console.log(JSON.stringify(request)) || ({
+  statusCode: 200,
+  body: 'I am done here'
+});
   
-const router = path => {
+const router = path => request => {
   switch(path) {
     case '/did/authentication':
       return triggerAuthentication();
     case '/did/callback':
-      return 'I am a callback';
+      return processCallback(JSON.parse(request));
     default:
-      return 'I am default.' + path;  
+      return {
+        statusCode: 404,
+        body: 'Not Found'
+      };
   }
 };
 
-const handler = async (event, context) => router(event.path);
+const handler = async (event, context) => router(event.path)(event.body);
 
 export {handler};
