@@ -216,7 +216,7 @@ const configuration = {
             path: '/ngrok',
             api: {
                 options: optionsAPI,
-                any: ngrokPath
+                get: ngrokPath
             }
         },
         {

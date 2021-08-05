@@ -4,14 +4,45 @@ import axios from 'axios';
 const api_url = isEqual('development')(process.env.NODE_ENV) ? 'http://localhost:5000' : '/.netlify/functions';
 
 /**
- * Ansynchronous post request to a Netlify Function on an input path
- * that maybe returns a returns response data based on input data.
+ * Ansynchronous get request to a Netlify Function on an input path
+ * that maybe returns a returns response data.
  * 
- * @HindleyMilner postToFunction :: string -> object -> AsyncEffect.of(Maybe.of(object))
+ * @HindleyMilner getToFunction :: string -> () -> AsyncEffect(Maybe))
  *
  * @pure
  * @param {string} path path to the Netlify Function added to /.netlify/functions
- * @param {object} data data to be posted to the function
+ * @returns {AsyncEffect} AsyncEffect of Maybe of quote object
+ * 
+ * @example
+ * getToFunction('/my-function')()
+ * .trigger
+ * (error => console.log(error))
+ * (MaybeData =>
+ *  maybe
+ *  (() => console.log('Response data is Nothing.'))
+ *  (data => console.log('Response data are: ', data))
+ *  (MaybeData)
+ * );
+ */
+const getToFunction = path => () =>
+    map(response => Maybe.of(response.data))
+    (
+        AsyncEffect.ofPromise(() =>
+            axios.get(
+                api_url + path
+            )
+        )
+    );
+
+/**
+ * Ansynchronous post request to a Netlify Function on an input path
+ * that maybe returns a returns response data based on input payload.
+ * 
+ * @HindleyMilner postToFunction :: string -> object -> AsyncEffect(Maybe)
+ *
+ * @pure
+ * @param {string} path path to the Netlify Function added to /.netlify/functions
+ * @param {object} payload payload to be posted to the function
  * @returns {AsyncEffect} AsyncEffect of Maybe of quote object
  * 
  * @example
@@ -25,13 +56,18 @@ const api_url = isEqual('development')(process.env.NODE_ENV) ? 'http://localhost
  *  (MaybeData)
  * );
  */
-export const postToFunction = path => data =>
-    map(response => Maybe.of(response.data))
-    (
-        AsyncEffect.ofPromise(() =>
-            axios.post(
-                api_url + path,
-                data
-            )
+const postToFunction = path => payload =>
+map(response => Maybe.of(response.data))
+(
+    AsyncEffect.ofPromise(() =>
+        axios.post(
+            api_url + path,
+            payload
         )
-    );
+    )
+);
+
+export {
+    getToFunction,
+    postToFunction
+}

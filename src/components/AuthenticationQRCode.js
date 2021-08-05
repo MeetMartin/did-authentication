@@ -12,8 +12,8 @@ const AuthenticationQRCode = () => {
 
     return (
         <>
-            {isDevelopment && <>{state.ngrokURL ? <QRCode value={`didcomm://${state.ngrokURL}/authentication`} size={300} /> : <p>Loading QR Code</p>}</>}
-            {!isDevelopment && <QRCode value={`didcomm://${window.location}/.netlify/functions/authentication`} size={300} />}
+            {isDevelopment && <>{state.ngrokURL ? <QRCode value={`didcomm://${state.ngrokURL}/did/authentication`} size={300} /> : <p>Loading QR Code</p>}</>}
+            {!isDevelopment && <QRCode value={`didcomm://${window.location}/.netlify/functions/did/authentication`} size={300} />}
         </>
     );
 };

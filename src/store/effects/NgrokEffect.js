@@ -1,3 +1,3 @@
-import { postToFunction } from './NetlifyFunction';
+import { getToFunction } from './NetlifyFunction';
 
-export const requestNgrokUrl = postToFunction('/ngrok');
+export const requestNgrokUrl = getToFunction('/ngrok');

@@ -7,7 +7,7 @@
     "dev": "webpack serve --progress --open --mode development --config webpack.development.config.js",
     "maintain": "npm install & npm update && npm audit fix --force",
     "setup-did": "nodemon -r @babel/register -r dotenv/config ./setup/setup-did.js",
-    "functions": "nodemon -r @babel/register -w lambda lambda/functions.js",
+    "functions": "nodemon -r @babel/register -r dotenv/config -w lambda lambda/functions.js",
     "build-did": "webpack --progress --mode production --config lambda/webpack.functions.did.config.js",
     "build-web": "webpack --progress --mode production --config webpack.production.config.js",
     "build": "npm run build-web",
@@ -16,7 +16,7 @@
   "author": "Martin Novak",
   "license": "ISC",
   "devDependencies": {
-    "@7urtle/lambda": "^1.2.18",
+    "@7urtle/lambda": "^1.2.19",
     "@7urtle/logger": "^1.1.4",
     "@7urtle/server": "^1.0.13",
     "@babel/core": "^7.15.0",
