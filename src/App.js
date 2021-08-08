@@ -5,15 +5,24 @@ import { StoreProvider } from './store/StoreContext';
 import HomePage from './pages/HomePage';
 
 const GlobalStyle  = createGlobalStyle`
-    html {
+    html, body {
         height: 100%;
-        @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+        margin: 0;
         font-family: 'Roboto', sans-serif;
     }
     body {
-        background: linear-gradient(135deg, #553D67, #99738E);
+        background-image: url(${require('./assets/queenstown.jpg').default});
+        background-size: cover;
         background-repeat: no-repeat;
-        color: #FFF;
+        background-position: center center;
+        color: #000;
+    }
+    h1 {
+        font-size: 3rem;
+        font-weight: 700;
+    }
+    #root {
+        height: 100%;
     }
 `;
 
