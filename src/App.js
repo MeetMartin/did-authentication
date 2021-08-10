@@ -1,17 +1,21 @@
 import React from 'react';
+import {BrowserRouter as Router} from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
 
 import { StoreProvider } from './store/StoreContext';
-import HomePage from './pages/HomePage';
+import Routes from './Routes';
+
+import Header from './components/Header';
+import Footer from './components/Footer';
 
 const GlobalStyle  = createGlobalStyle`
-    html, body {
+    html, body, main {
         height: 100%;
         margin: 0;
         font-family: 'Roboto', sans-serif;
     }
     body {
-        background-image: url(${require('./assets/queenstown.jpg').default});
+        background-image: url(${require('./assets/city.jpg').default});
         background-size: cover;
         background-repeat: no-repeat;
         background-position: center center;
@@ -19,7 +23,17 @@ const GlobalStyle  = createGlobalStyle`
     }
     h1 {
         font-size: 3rem;
+    }
+    h2 {
+        font-size: 2rem;
+    }
+    a {
+        color: #000;
+        text-decoration: none;
         font-weight: 700;
+        &:hover {
+            text-decoration: underline;
+        }
     }
     #root {
         height: 100%;
@@ -34,7 +48,11 @@ const App = () => {
     return (
         <StoreProvider>
             <GlobalStyle />
-            <HomePage />
+            <Header />
+            <Router>
+                <Routes />
+            </Router>
+            <Footer />
         </StoreProvider>
     );
 };

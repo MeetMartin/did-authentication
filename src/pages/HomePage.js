@@ -1,34 +1,37 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
-import GlassPaper from '../components/GlassPaper';
+import Page from './Page';
 import GlassButton from '../components/GlassButton';
-import AuthenticationQRCode from '../components/AuthenticationQRCode';
+import LeftColumn from '../components/LeftColumn';
 
-const Wrapper = styled.div`
-    float: left;
-    max-width: 1000px;
-    padding: 40px;
-    height: calc(100% - 80px);
-    h1 {
-        margin-top: 0;
-    }
+const AuthenticationOr = styled.div`
+    font-size: 1.5rem;
+    width: 300px;
+    text-align: center;
+    padding: 15px;
 `;
 
 const HomePage = () => {
     return (
-        <Wrapper>
-            <GlassPaper>
-            <h1>
-                Decentralized Identifiers<br />
-                Are Here!
-            </h1>
-            <p>Something</p>
-            <GlassButton>Sign In</GlassButton> Or <GlassButton>Sign Up</GlassButton>
-            <br /><br />
-            <AuthenticationQRCode />
-            </GlassPaper>
-        </Wrapper>
+        <Page>
+            <LeftColumn>
+                <h1>
+                    Decentralized Identifiers<br />
+                    Are Here!
+                </h1>
+                <p>Decentralized Identifiers (DIDs) are user-controlled digital identities based on W3C standard using secure modern encryption.</p>
+                <h2>Try DID For Authentication</h2>
+                <Link to='/sign-in' title='Sign in using Decentralized Identifier'>
+                    <GlassButton>Sign In</GlassButton>
+                </Link>
+                <AuthenticationOr>or</AuthenticationOr>
+                <Link to='/sign-in' title='Sign in using Decentralized Identifier'>
+                    <GlassButton>Sign Up</GlassButton>
+                </Link>
+            </LeftColumn>
+        </Page>
     );
 };
 

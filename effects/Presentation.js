@@ -47,7 +47,7 @@ const createPresentationRequest = payload =>
         axios.post(
             `https://${payload.tenant}/v1/presentations/requests`,
             {
-                "challenge": `presentation-request-${shortid.generate()}`,
+                "challenge": `presentation-request-${payload.requestId}`,
                 "did": payload.did,
                 "templateId": payload.templateID,
                 "expiresTime": 1638836401000,

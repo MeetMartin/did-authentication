@@ -1,4 +1,4 @@
-import { map, flatMap, isNothing, Either, either, mergeEithers, compose, reduce, AsyncEffect } from '@7urtle/lambda';
+import { startsWith, lastOf, split, map, flatMap, isNothing, Either, either, mergeEithers, compose, reduce, AsyncEffect } from '@7urtle/lambda';
 import logger from '../../src/logger';
 
 import { requestMATTRAccessToken } from '../../effects/MATTR';
@@ -20,14 +20,17 @@ const getPresentationCallbackURL = () =>
     : envEither
   )(getValueFromEnv('PRESENTATION_CALLBACK_URL'));
 
-const getEnvironmentVariables = () =>
+const getId = id => isNothing(id) ? Either.Failure('ID is Nothing.') : Either.Success(id);
+
+const getInputVariables = id =>
   mergeEithers(
     getValueFromEnv('CLIENT_ID'),
     getValueFromEnv('CLIENT_SECRET'),
     getValueFromEnv('TENANT'),
     getValueFromEnv('TEMPLATE_ID'),
     getValueFromEnv('VERIFIER_DID'),
-    getPresentationCallbackURL() // uses process.env.PRESENTATION_CALLBACK_URL or process.env.ngrok
+    getPresentationCallbackURL(), // uses process.env.PRESENTATION_CALLBACK_URL or process.env.ngrok,
+    getId(id) // passed from QR code url
   );
 
 const valuesToPayload = values => ({
@@ -36,7 +39,8 @@ const valuesToPayload = values => ({
     tenant: values[2],
     templateID: values[3],
     did: values[4],
-    presentationCallbackURL: values[5]
+    presentationCallbackURL: values[5],
+    requestId: values[6]
   });
 
 const getPayloadWithAccessToken = payload =>
@@ -99,12 +103,12 @@ const getAuthenticationEffect = compose(
   map(flatMap(getPayloadWithPresentationRequest)), // => Either(AsyncEffect(Either))
   map(getPayloadWithAccessToken), // => Either(AsyncEffect(Either))
   map(valuesToPayload), // => Either
-  getEnvironmentVariables // => Either
+  getInputVariables // => Either
 );
 
 const errorsToError = reduce([])((a, c) => `${a} ${c}`);
 
-const triggerAuthentication = () =>
+const triggerAuthentication = id =>
   either
   (errors => logger.error(errorsToError(errors)) && error500Response)
   (effect =>
@@ -119,7 +123,7 @@ const triggerAuthentication = () =>
       }))
     )
   )
-  (getAuthenticationEffect());
+  (getAuthenticationEffect(id));
 
 const processCallback = request => console.log(JSON.stringify(request)) || ({
   statusCode: 200,
@@ -127,17 +131,14 @@ const processCallback = request => console.log(JSON.stringify(request)) || ({
 });
   
 const router = path => request => {
-  switch(path) {
-    case '/did/authentication':
-      return triggerAuthentication();
-    case '/did/callback':
-      return processCallback(JSON.parse(request));
-    default:
-      return {
-        statusCode: 404,
-        body: 'Not Found'
-      };
-  }
+  if(startsWith('/did/authentication')(path)) return triggerAuthentication(lastOf(split('/')(path)));
+
+  if(startsWith('/did/callback')(path)) return processCallback(JSON.parse(request));
+
+  return {
+    statusCode: 404,
+    body: 'Not Found'
+  };
 };
 
 const handler = async (event, context) => router(event.path)(event.body);
