@@ -1,7 +1,9 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 import AuthenticationQRCode from '../components/AuthenticationQRCode';
+import GlassButton from '../components/GlassButton';
 
 const StoreBadges = styled.div`
     img {
@@ -21,7 +23,7 @@ const GoogleStoreBadge = styled.div`
 const QRInfo = () => {
     return (
         <>
-            <p>You can download the MATTR wallet app on
+            <p>You can download the MATTR Wallet app on
                 the <a href="https://apps.apple.com/us/app/mattr-wallet/id1518660243" rel="noreferrer noopener">App Store</a><br /> or
                 on <a href="https://play.google.com/store/apps/details?id=global.mattr.wallet" rel="noreferrer noopener">Google Play</a>.
             </p>
@@ -35,8 +37,10 @@ const QRInfo = () => {
                     </GoogleStoreBadge>
                 </a>
             </StoreBadges>
-            <p>Scan the QR code using MATTR wallet:</p>
+            <p>Scan the QR code using MATTR Wallet:</p>
             <AuthenticationQRCode />
+            <p>Once you are verified in the MATTR Wallet:</p>
+            <GlassButton>Verified in Wallet</GlassButton>
         </>
     );
 };

@@ -23,7 +23,7 @@ const createPresentationTemplate = payload =>
         axios.post(
             `https://${payload.tenant}/v1/presentations/templates`,
             {
-                "name": `presentation-template-${shortid.generate()}`,
+                "name": shortid.generate(),
                 "domain": payload.tenant,
                 "query": [
                     {
@@ -47,7 +47,7 @@ const createPresentationRequest = payload =>
         axios.post(
             `https://${payload.tenant}/v1/presentations/requests`,
             {
-                "challenge": `presentation-request-${payload.requestId}`,
+                "challenge": payload.requestId,
                 "did": payload.did,
                 "templateId": payload.templateID,
                 "expiresTime": 1638836401000,
