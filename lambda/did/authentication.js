@@ -1,4 +1,4 @@
-import { map, flatMap, isNothing, Either, either, mergeEithers, compose, reduce, AsyncEffect } from '@7urtle/lambda';
+import { map, flatMap, isNothing, Either, either, mergeEithers, reduce, compose, AsyncEffect } from '@7urtle/lambda';
 import logger from '../../src/logger';
 
 import { requestMATTRAccessToken } from '../../effects/MATTR';
@@ -52,47 +52,38 @@ const getPayloadWithAccessToken = payload =>
   )
   (requestMATTRAccessToken(payload));
 
-const getPayloadWithPresentationRequest = payloadEither =>
+const getPayload = fn => onResult => payloadEither =>
   either
   (() => AsyncEffect.of(_ => resolve => resolve(payloadEither)))
-  (payload =>
-    map
-    (result =>
-      isNothing(result.data?.request)
-      ? Either.Failure('Presentation Request is Nothing.')
-      : Either.Success({...payload, request: result.data.request})
-    )
-    (createPresentationRequest(payload))
-  )
+  (payload => map(onResult(payload))(fn(payload)))
   (payloadEither);
 
-const getPayloadWithDIDURL = payloadEither =>
-  either
-  (() => AsyncEffect.of(_ => resolve => resolve(payloadEither)))
-  (payload =>
-    map
-    (result =>
-      isNothing(result.data?.didDocument?.authentication[0])
-      ? Either.Failure('Verifier DID URL is Nothing.')
-      : Either.Success({...payload, didUrl: result.data.didDocument.authentication[0]})
-    )
-    (readDID(payload))
-  )
-  (payloadEither);
+const getPayloadWithPresentationRequest =
+  getPayload
+  (createPresentationRequest)
+  (payload => result =>
+    isNothing(result.data?.request)
+    ? Either.Failure('Presentation Request is Nothing.')
+    : Either.Success({...payload, request: result.data.request})
+  );
 
-const getPayloadWithJWS = payloadEither =>
-  either
-  (() => AsyncEffect.of(_ => resolve => resolve(payloadEither)))
-  (payload =>
-    map
-    (result =>
-      isNothing(result.data)
-      ? Either.Failure('JWS is Nothing.')
-      : Either.Success({...payload, jws: result.data})
-    )
-    (createJWS(payload))
-  )
-  (payloadEither);
+const getPayloadWithDIDURL =
+  getPayload
+  (readDID)
+  (payload => result =>
+    isNothing(result.data?.didDocument?.authentication[0])
+    ? Either.Failure('Verifier DID URL is Nothing.')
+    : Either.Success({...payload, didUrl: result.data.didDocument.authentication[0]})
+  );
+
+const getPayloadWithJWS =
+  getPayload
+  (createJWS)
+  (payload => result =>
+    isNothing(result.data)
+    ? Either.Failure('JWS is Nothing.')
+    : Either.Success({...payload, jws: result.data})
+  );
 
 const getJWSURL = payload => `https://${payload.tenant}/?request=${payload.jws}`;
 
@@ -110,13 +101,13 @@ const errorsToError = reduce([])((a, c) => `${a} ${c}`);
 
 const triggerAuthentication = id =>
   either
-  (errors => logger.error(errorsToError(errors)) && error500Response)
+  (errors => logger.error('Authentication input variables: ' + errorsToError(errors)) && error500Response)
   (effect =>
     effect.trigger
-    (error => logger.error(`${error.response.status} ${error.response.statusText} ${error.response.config.url} ${error.response.data?.details[0]?.msg ? error.response.data.details[0].msg : ''}`) && error500Response) 
+    (error => logger.error(`Authentication presentation request: ${error.response.status} ${error.response.statusText} ${error.response.config.url} ${error.response.data?.details[0]?.msg ? error.response.data.details[0].msg : ''}`) && error500Response) 
     (
       either
-      (errors => logger.error(errorsToError(errors)) && error500Response)
+      (errors => logger.error('JWS URL: ' + errorsToError(errors)) && error500Response)
       (result => ({
         statusCode: 301,
         location: result

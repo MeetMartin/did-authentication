@@ -1,7 +1,7 @@
-import { isNothing, isEqual, isArray, Either, either, validateEithers, AsyncEffect, map, flatMap, compose } from '@7urtle/lambda';
-import faunadb from 'faunadb';
+import { isNothing, isEqual, isArray, Either, either, validateEithers, map, flatMap, compose, reduce } from '@7urtle/lambda';
 
 import logger from '../../src/logger';
+import { getClient, createRecord, getSecret } from '../../effects/Fauna';
 
 const validateRequest =
     validateEithers(
@@ -10,39 +10,17 @@ const validateRequest =
         request => isEqual('true')(request.verified) ? Either.Failure(`verified is not true.`) : Either.Success(request)
     );
 
-const getFaunaSecret = request =>
-    isNothing(process.env.FAUNA_SECRET)
-    ? Either.Failure('process.env.FAUNA_SECRET is Nothing.')
-    : Either.Success({...request, faunaSecret: process.env.FAUNA_SECRET});
+const getData = request => client => map(data => ({client, data}))(validateRequest(request));
 
-const getFaunaClient = request =>
-    Either
-    .try(() => ({
-            ...request,
-            client: new faunadb.Client({
-                secret: request.faunaSecret
-            })
-        })    
-    );
+const storeSuccessfulSignIn = request => createRecord({client: request.client, data: request.data, collection: 'signins'});
 
-const storeSuccessfulSignIn = request =>
-    AsyncEffect
-    .ofPromise(() =>
-        request.client.query(
-            faunadb.query.Create(
-                faunadb.query.Collection('signins'),
-                {data: {challengeId: request.challengeId, holder: request.holder}}
-            )
-        )
-    );
-
-const getSuccessfulSignInEffect =
+const getSuccessfulSignInEffect = request =>
     compose(
         map(storeSuccessfulSignIn),
-        flatMap(getFaunaClient),
-        flatMap(getFaunaSecret),
-        validateRequest
-    );
+        flatMap(getData(request)),
+        flatMap(getClient),
+        getSecret
+    )();
 
 const errorsToError = error => isArray(error) ? reduce([])((a, c) => `${a} ${c}`)(error) : error;
 
@@ -53,14 +31,14 @@ const error500Response = {
 
 const processCallback = request =>
     either
-    (error => logger.error(errorsToError(error)) && error500Response)
+    (error => logger.error('DID callback processing: ' + errorsToError(error)) && error500Response)
     (effect =>
         effect.trigger
-        (error => logger.error(error) && error500Response)
+        (error => logger.error('Fauna signins record creation: ' + error) && error500Response)
         (() => ({statusCode: 204}))
     )
     (getSuccessfulSignInEffect(request));
 
 export {
     processCallback
-}
+};
