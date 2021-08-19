@@ -85,14 +85,10 @@ module.exports = {
         }),
     ],
     devServer: {
-        contentBase: path.join(__dirname, 'src'),
-        port: 8080,
-        overlay: {
-            warnings: true,
-            errors: true
+        static: {
+            directory: path.join(__dirname, 'src'),
         },
-        quiet: true,
-        historyApiFallback: true,
-        disableHostCheck: true
+        port: 8080,
+        historyApiFallback: true
     }
 };
