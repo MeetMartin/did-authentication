@@ -1,7 +1,7 @@
 import { isNothing, Either, AsyncEffect } from '@7urtle/lambda';
 import faunadb from 'faunadb';
 
-const getSecret = () =>
+const getFaunaSecretFromEnv = () =>
     isNothing(process.env.FAUNA_SECRET)
     ? Either.Failure('process.env.FAUNA_SECRET is Nothing.')
     : Either.Success(process.env.FAUNA_SECRET);
@@ -35,7 +35,7 @@ const getRecordByIndex = request =>
     );
 
 export {
-    getSecret,
+    getFaunaSecretFromEnv,
     getClient,
     createRecord,
     getRecordByIndex

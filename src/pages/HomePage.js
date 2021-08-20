@@ -27,7 +27,7 @@ const HomePage = () => {
                     <GlassButton>Sign In</GlassButton>
                 </Link>
                 <AuthenticationOr>or</AuthenticationOr>
-                <Link to='/sign-in' title='Sign in using Decentralized Identifier'>
+                <Link to='/sign-up' title='Sign up using Decentralized Identifier'>
                     <GlassButton>Sign Up</GlassButton>
                 </Link>
             </LeftColumn>

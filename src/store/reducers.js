@@ -2,7 +2,8 @@ import logger from '../logger';
 import types from "./types";
 
 const initialState = {
-    ngrokURL: null
+    ngrokURL: null,
+    userName: ''
 };
 
 const reducer = (state = initialState, action) => {
@@ -15,6 +16,11 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 ngrokURL: action.payload
             });
+        case(types.RECEIVE_USER_NAME):
+            return ({
+                ...state,
+                userName: action.payload
+            })
         default:
             return state;
     }

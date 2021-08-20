@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 import AuthenticationQRCode from '../components/AuthenticationQRCode';
@@ -9,7 +8,7 @@ const StoreBadges = styled.div`
     img {
         float: left;
     }
-    padding: 20px 0;
+    padding: 20px 0 0 0;
     height: 60px;
 `;
 const GoogleStoreBadge = styled.div`
@@ -39,8 +38,6 @@ const QRInfo = () => {
             </StoreBadges>
             <p>Scan the QR code using MATTR Wallet:</p>
             <AuthenticationQRCode />
-            <p>Once you are verified in the MATTR Wallet:</p>
-            <GlassButton>Verified in Wallet</GlassButton>
         </>
     );
 };
