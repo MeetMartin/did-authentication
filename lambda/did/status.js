@@ -1,4 +1,4 @@
-import { isNothing, isArray, isLessThan, isEqual, startsWith, Either, spy, eitherToAsyncEffect, validateEithers, map, flatMap, compose, AsyncEffect, reduce } from '@7urtle/lambda';
+import { isNothing, isArray, isUndefined, isLessThan, isEqual, startsWith, Either, spy, eitherToAsyncEffect, validateEithers, map, flatMap, compose, AsyncEffect, reduce } from '@7urtle/lambda';
 
 import logger from '../../src/logger';
 import { getRecordByIndex, getClient, getFaunaSecretFromEnv } from '../../effects/Fauna';
@@ -43,11 +43,29 @@ const getSignInByChallengeId = data => client =>
 
 const errorsToError = error => isArray(error) ? reduce([])((a, c) => `${a} ${c}`)(error) : error;
 
+const errorToReasonMap = new Map([
+    ['NotFound: instance not found', 'You did not scan the QR code using the wallet.']
+]);
+
+const errorToReason = error =>
+    (reason =>
+        isUndefined(reason)
+        ? 'Unknown issue.'
+        : reason
+    )(
+        isArray(error)
+        ? errorToReasonMap.get(error[0] + '')
+        : errorToReasonMap.get(error + '')
+    );
+
 const checkStatus = request =>
     checkSignInStatus(request)
     .trigger
-    (error => logger.error('Signins check processing: ' + errorsToError(error)) && error500Response)
-    (result => console.log('test', result) || ({statusCode: 200}));
+    (error =>
+        logger.error('Signins check processing: ' + errorsToError(error)) &&
+        ({statusCode: 200, body: JSON.stringify({ verified: false, reason: errorToReason(error) })})
+    )
+    (result => console.log('test', result) || ({statusCode: 200, body: JSON.stringify({ verified: true })}));
 
 const checkSignInStatus = request =>
     compose(

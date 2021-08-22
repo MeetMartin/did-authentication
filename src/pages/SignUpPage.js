@@ -1,5 +1,7 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
+import shortid from 'shortid';
+import styled from 'styled-components';
 
 import Page from './Page';
 import { StoreContext } from '../store/StoreContext';
@@ -8,8 +10,13 @@ import QRInfo from '../components/QRInfo';
 import LeftColumn from '../components/LeftColumn';
 import GlassButton from '../components/GlassButton';
 
+const ErrorParagraph = styled.p`
+    color: red;
+`;
+
 const SignUpPage = () => {
-    const { state } = useContext(StoreContext);
+    const { state, actions } = useContext(StoreContext);
+    const challengeId = shortid.generate();
 
     return (
         <Page>
@@ -20,10 +27,15 @@ const SignUpPage = () => {
                 <SignUpForm />
                 {state.userName &&
                     <>
-                        <h2>Claim Your Account<br />With MATTR Wallet</h2>
-                        <QRInfo />
+                        <h2>
+                            {state.userName}:<br/>
+                            Claim Your Account<br />
+                            With MATTR Wallet
+                        </h2>
+                        <QRInfo QRInput={challengeId} />
                         <p>Once you are verified in the MATTR Wallet:</p>
-                        <GlassButton>Verified in Wallet</GlassButton>
+                        <GlassButton onClick={() => actions.requestWalletVerification(challengeId)}>Verified in Wallet</GlassButton>
+                        <ErrorParagraph>{state.signUpError}</ErrorParagraph>
                     </>
                 }
                 <p>

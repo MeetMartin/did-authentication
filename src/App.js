@@ -25,7 +25,7 @@ const GlobalStyle  = createGlobalStyle`
         font-size: 3rem;
     }
     h2 {
-        font-size: 2rem;
+        font-size: 2.4rem;
     }
     a {
         color: #000;

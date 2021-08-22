@@ -24,7 +24,7 @@ const api_url = isEqual('development')(process.env.NODE_ENV) ? 'http://localhost
  *  (MaybeData)
  * );
  */
-const getToFunction = path => () =>
+const getToFunction = path =>
     map(response => Maybe.of(response.data))
     (
         AsyncEffect.ofPromise(() =>

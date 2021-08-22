@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 
 import AuthenticationQRCode from '../components/AuthenticationQRCode';
-import GlassButton from '../components/GlassButton';
 
 const StoreBadges = styled.div`
     img {
@@ -19,7 +18,7 @@ const GoogleStoreBadge = styled.div`
     }
 `;
 
-const QRInfo = () => {
+const QRInfo = ({ QRInput }) => {
     return (
         <>
             <p>You can download the MATTR Wallet app on
@@ -37,7 +36,7 @@ const QRInfo = () => {
                 </a>
             </StoreBadges>
             <p>Scan the QR code using MATTR Wallet:</p>
-            <AuthenticationQRCode />
+            <AuthenticationQRCode QRInput={QRInput} />
         </>
     );
 };
