@@ -34,9 +34,28 @@ const getRecordByIndex = request =>
         )
     );
 
+const deleteRecordByIndex = request =>
+    AsyncEffect
+    .ofPromise(() =>
+        request.client.query(
+            faunadb.query.Delete(
+                faunadb.query.Select(
+                    'ref',
+                    faunadb.query.Get(
+                        faunadb.query.Match(
+                            faunadb.query.Index(request.index),
+                            request.data
+                        )
+                    )
+                )
+            )
+        )
+    );
+
 export {
     getFaunaSecretFromEnv,
     getClient,
     createRecord,
-    getRecordByIndex
+    getRecordByIndex,
+    deleteRecordByIndex
 };

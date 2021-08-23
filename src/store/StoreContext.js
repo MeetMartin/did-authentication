@@ -17,9 +17,10 @@ const StoreProvider = ({ children }) => {
     // Create an object of all our actions, handling special cases where a simple dispatch is too primitive
     const actions = useActions(state, enhancedDispatch);
 
-    // Log new state
+    // Log and persist new state
     useEffect( () => {
-        logger.debug('[StoreProvider state] state updated', state);;
+        sessionStorage.setItem('state', JSON.stringify(state));
+        logger.debug('[StoreProvider state] state updated', state);
     }, [state]);
 
     return (

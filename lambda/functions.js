@@ -83,14 +83,15 @@ const setupWithNgrok = compose(
  * addCORSForLocalDevelopment({});
  * // => {
  *  'Access-Control-Allow-Origin': 'http://localhost:8080',
- *  'Access-Control-Request-Method': 'POST, OPTIONS, GET, HEAD',
+ *  'Access-Control-Request-Method': 'POST, OPTIONS, GET, HEAD, DELETE, PATCH',
  *  'Access-Control-Allow-Headers': 'Content-Type, Authorization'
  * }
  */
  const addCORSForLocalDevelopment = response => ({
     ...response,
     'Access-Control-Allow-Origin': 'http://localhost:8080',
-    'Access-Control-Request-Method': 'POST, OPTIONS, GET, HEAD',
+    'Access-Control-Request-Method': 'POST, OPTIONS, GET, HEAD, DELETE, PATCH',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS, GET, HEAD, DELETE, PATCH',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization'
 });
 
@@ -174,9 +175,10 @@ const optionsAPI = request =>
     AsyncEffect.of(_ => resolve => resolve({
         ...request,
         status: 204,
-        allow: 'OPTIONS, POST',
+        allow: 'POST, OPTIONS, GET, HEAD, DELETE, PATCH',
         'Access-Control-Allow-Origin': 'http://localhost:8080',
-        'Access-Control-Request-Method': 'POST, OPTIONS',
+        'Access-Control-Request-Method': 'POST, OPTIONS, GET, HEAD, DELETE, PATCH',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS, GET, HEAD, DELETE, PATCH',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization'
     }));
 

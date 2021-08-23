@@ -1,8 +1,10 @@
-import { createUser } from './createUser';
 import { isNothing, substr, flatMap, compose, Either, either } from '@7urtle/lambda';
 
 import logger from '../../src/logger';
 import { verify, getJWTPrivateKeyFromEnv } from '../../effects/JWT';
+import { createUser } from './createUser';
+import { readUser } from './readUser';
+import { deleteUser } from './deleteUser';
 
 const getJWT = event =>
     isNothing(event.headers?.authorization)
@@ -21,9 +23,11 @@ const authorize = event =>
 const router = event => decodedJWT => {
     switch(event.method) {
         case 'get':
-            return ({statusCode: 204});
+            return readUser(decodedJWT.did);
         case 'post':
             return createUser(JSON.parse(event.body))(decodedJWT.did);
+        case 'delete':
+            return deleteUser(decodedJWT.did);
         default:
             return ({statusCode: 400, body: 'Bad Request'})
     }

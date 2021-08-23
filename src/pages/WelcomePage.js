@@ -20,8 +20,16 @@ const WelcomePage = () => {
             <WelcomePageDiv>
                 <GlassPaper>
                     <h1>Welcome, {state.userName}!</h1>
+                    <p>
+                        The database is set to store your account only for 30 days.
+                    </p>
                     <Link to='/' onClick={() => actions.requestSignOut()}>
                         <GlassButton>Sign Out</GlassButton>
+                    </Link>
+                    <br/><br/>
+                    or<br /><br/>
+                    <Link to='/' onClick={() => actions.deleteUser()}>
+                        <GlassButton>Delete User</GlassButton>
                     </Link>
                 </GlassPaper>
             </WelcomePageDiv>

@@ -3,27 +3,6 @@ import axios from 'axios';
 
 const api_url = isEqual('development')(process.env.NODE_ENV) ? 'http://localhost:5000' : '/.netlify/functions';
 
-/**
- * Ansynchronous get request to a Netlify Function on an input path
- * that maybe returns a returns response data.
- * 
- * @HindleyMilner getToFunction :: string -> () -> AsyncEffect(Maybe))
- *
- * @pure
- * @param {string} path path to the Netlify Function added to /.netlify/functions
- * @returns {AsyncEffect} AsyncEffect of Maybe of quote object
- * 
- * @example
- * getToFunction('/my-function')()
- * .trigger
- * (error => console.log(error))
- * (MaybeData =>
- *  maybe
- *  (() => console.log('Response data is Nothing.'))
- *  (data => console.log('Response data are: ', data))
- *  (MaybeData)
- * );
- */
 const getToFunction = path => headers =>
     map(response => Maybe.of(response.data))
     (
@@ -35,28 +14,16 @@ const getToFunction = path => headers =>
         )
     );
 
-/**
- * Ansynchronous post request to a Netlify Function on an input path
- * that maybe returns a returns response data based on input payload.
- * 
- * @HindleyMilner postToFunction :: string -> object -> AsyncEffect(Maybe)
- *
- * @pure
- * @param {string} path path to the Netlify Function added to /.netlify/functions
- * @param {object} payload payload to be posted to the function
- * @returns {AsyncEffect} AsyncEffect of Maybe of quote object
- * 
- * @example
- * postToFunction('/my-function')({something: 'something'})
- * .trigger
- * (error => console.log(error))
- * (MaybeData =>
- *  maybe
- *  (() => console.log('Response data is Nothing.'))
- *  (data => console.log('Response data are: ', data))
- *  (MaybeData)
- * );
- */
+const deleteToFunction = path => headers =>
+    (
+        AsyncEffect.ofPromise(() =>
+            axios.delete(
+                api_url + path,
+                headers
+            )
+        )
+    );
+
 const postToFunction = path => payload => headers =>
     map(response => Maybe.of(response.data))
     (
@@ -71,5 +38,6 @@ const postToFunction = path => payload => headers =>
 
 export {
     getToFunction,
-    postToFunction
+    postToFunction,
+    deleteToFunction
 }

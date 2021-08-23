@@ -5,13 +5,14 @@
   "main": "index.js",
   "scripts": {
     "dev": "webpack serve --progress --open --mode development --config webpack.development.config.js",
-    "maintain": "npm install & npm update && npm audit fix --force",
+    "maintain": "npm install & npm update && npm audit fix --force && npm run build-all",
     "setup-did": "nodemon -r @babel/register -r dotenv/config ./setup/setup-did.js",
     "functions": "nodemon -r @babel/register -r dotenv/config -w lambda -w effects lambda/functions.js",
     "build-did": "webpack --progress --mode production --config lambda/webpack.functions.did.config.js",
+    "build-user": "webpack --progress --mode production --config lambda/webpack.functions.user.config.js",
     "build-web": "webpack --progress --mode production --config webpack.production.config.js",
     "build": "npm run build-web",
-    "build-all": "npm run build-web && npm run build-did"
+    "build-all": "npm run build-web && npm run build-did && npm run build-user"
   },
   "author": "Martin Novak",
   "license": "ISC",

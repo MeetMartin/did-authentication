@@ -5,9 +5,15 @@
 Congratulations for reaching my repository, brave developer! This project is still very much in progress
 and I am hard at work on it. There will be a full medium post and a new YouTube video once I am done :)
 
+Currently the project is in a state of working MVP and requires code clean up so that I don't have to be ashamed of it.
+I also have to add mobile support and more project relevant information directly to the site.
+
 Medium Post:
 
 YouTube Video:
+
+You will need to sign up with MATTR and Fauna to obtain their credentials. MATTR provides all the API necessary for working with
+decentralized identifiers and Fauna is used for database storing sign in and user information.
 
 You will need .env file. You can find the template for it in .env_template
 

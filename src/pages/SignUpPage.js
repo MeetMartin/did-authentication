@@ -28,6 +28,10 @@ const SignUpPage = () => {
         state.authenticated && history.push('/welcome');
     }, [state.authenticated]);
 
+    useEffect(() => {
+        actions.receiveSignUpError(); // clear errors when page is opened
+    }, []);
+
     return (
         <Page>
             <LeftColumn>

@@ -1,7 +1,9 @@
 import logger from '../logger';
 import types from "./types";
 
-const initialState = {
+const stateFromLocalStorage = sessionStorage.getItem('state');
+
+const initialState = JSON.parse(stateFromLocalStorage) || {
     ngrokURL: null,
     userName: '',
     signUpError: '',
@@ -31,6 +33,11 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 requestedSignUp: true
             });
+        case(types.REQUEST_SIGN_IN):
+            return ({
+                ...state,
+                requestedSignIn: true
+            });
         case(types.RECEIVE_SIGN_UP_ERROR):
             return ({
                 ...state,
@@ -45,6 +52,11 @@ const reducer = (state = initialState, action) => {
             return ({
                 ...state,
                 requestedSignUp: false
+            });
+        case(types.READ_USER):
+            return ({
+                ...state,
+                requestedSignIn: false
             });
         case(types.RECEIVE_AUTHENTICATION):
             return ({
