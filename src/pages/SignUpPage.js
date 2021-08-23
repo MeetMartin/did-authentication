@@ -1,7 +1,8 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import shortid from 'shortid';
 import styled from 'styled-components';
+import { useHistory } from 'react-router-dom';
 
 import Page from './Page';
 import { StoreContext } from '../store/StoreContext';
@@ -17,6 +18,15 @@ const ErrorParagraph = styled.p`
 const SignUpPage = () => {
     const { state, actions } = useContext(StoreContext);
     const challengeId = shortid.generate();
+    const history = useHistory();
+    
+    useEffect(() => {
+        state.requestedSignUp && state.bearer && actions.createUser();
+    }, [state.bearer]);
+
+    useEffect(() => {
+        state.authenticated && history.push('/welcome');
+    }, [state.authenticated]);
 
     return (
         <Page>
@@ -24,8 +34,10 @@ const SignUpPage = () => {
                 <h1>
                     Sign Up
                 </h1>
-                <SignUpForm />
-                {state.userName &&
+                {
+                    !state.userName
+                    ? <SignUpForm />
+                    :
                     <>
                         <h2>
                             {state.userName}:<br/>
@@ -34,7 +46,7 @@ const SignUpPage = () => {
                         </h2>
                         <QRInfo QRInput={challengeId} />
                         <p>Once you are verified in the MATTR Wallet:</p>
-                        <GlassButton onClick={() => actions.requestWalletVerification(challengeId)}>Verified in Wallet</GlassButton>
+                        <GlassButton onClick={() => actions.requestSignUp(challengeId)}>Verified in Wallet</GlassButton>
                         <ErrorParagraph>{state.signUpError}</ErrorParagraph>
                     </>
                 }

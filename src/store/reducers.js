@@ -4,7 +4,11 @@ import types from "./types";
 const initialState = {
     ngrokURL: null,
     userName: '',
-    signUpError: ''
+    signUpError: '',
+    bearer: '',
+    requestedSignUp: false,
+    requestedSignIn: false,
+    authenticated: false
 };
 
 const reducer = (state = initialState, action) => {
@@ -22,15 +26,38 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 userName: action.payload
             });
-        case(types.REQUEST_WALLET_VERIFICATION):
+        case(types.REQUEST_SIGN_UP):
             return ({
                 ...state,
-                challengeId: action.payload
+                requestedSignUp: true
             });
         case(types.RECEIVE_SIGN_UP_ERROR):
             return ({
                 ...state,
                 signUpError: action.payload
+            });
+        case(types.RECEIVE_WALLET_VERIFICATION):
+            return ({
+                ...state,
+                bearer: action.payload
+            });
+        case(types.CREATE_USER):
+            return ({
+                ...state,
+                requestedSignUp: false
+            });
+        case(types.RECEIVE_AUTHENTICATION):
+            return ({
+                ...state,
+                authenticated: true,
+                userName: action.payload.userName
+            });
+        case(types.REQUEST_SIGN_OUT):
+            return ({
+                ...state,
+                authenticated: false,
+                userName: '',
+                bearer: ''
             });
         default:
             return state;

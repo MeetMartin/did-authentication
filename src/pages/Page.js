@@ -1,13 +1,13 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 
-const Page = props => {
+const Page = ({ children }) => {
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
     
     return (
         <main>
-            {props.children}
+            {children}
         </main>
     );
 };

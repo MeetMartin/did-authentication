@@ -1,10 +1,10 @@
 import ngrok from 'ngrok';
 import Server from '@7urtle/server';
-import { AsyncEffect, compose, map, passThrough } from '@7urtle/lambda';
-import fs from 'fs';
+import { AsyncEffect, compose, map, passThrough, spy } from '@7urtle/lambda';
 
 import logger from '../src/logger';
 import { handler as DIDHandler } from './did/did';
+import { handler as UserHandler } from './user/user';
 
 /**
  * Turns node HTTP request into event object expected by Netlify function handler
@@ -224,6 +224,13 @@ const configuration = {
             api: {
                 options: optionsAPI,
                 any: netlifyFunctionHandler(DIDHandler)
+            }
+        },
+        {
+            path: '/user/*',
+            api: {
+                options: optionsAPI,
+                any: netlifyFunctionHandler(UserHandler)
             }
         }
     ],

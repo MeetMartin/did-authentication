@@ -9,7 +9,7 @@ export const getDIDStatusByChallengeId = dispatch => action =>
         (() => dispatch({type: types.RECEIVE_SIGN_UP_ERROR, payload: 'Unknown data error.'}))
         (data =>
             isEqual(true)(data.verified)
-            ? dispatch({type: types.RECEIVE_WALLET_VERIFICATION})
+            ? dispatch({type: types.RECEIVE_WALLET_VERIFICATION, payload: data.bearer})
             : isJust(data.reason)
                 ? dispatch({type: types.RECEIVE_SIGN_UP_ERROR, payload: data.reason})
                 : dispatch({type: types.RECEIVE_SIGN_UP_ERROR, payload: 'Unknown error.'})

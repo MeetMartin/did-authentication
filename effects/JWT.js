@@ -1,19 +1,17 @@
-import { AsyncEffect } from '@7urtle/lambda';
+import { isNothing, Either } from '@7urtle/lambda';
 import jwt from 'jsonwebtoken';
 
-const sign = data => key =>
-    AsyncEffect
-    .of(reject => resolve =>
-        jwt.sign(data, key, { algorithm: 'RS256' }, (error, token) => error ? reject(error) : resolve(token))
-    );
+const getJWTPrivateKeyFromEnv = () =>
+    isNothing(process.env.JWT_PRIVATE_KEY)
+    ? Either.Failure('process.env.JWT_PRIVATE_KEY is Nothing.')
+    : Either.Success(process.env.JWT_PRIVATE_KEY);
 
-const verify = token => key =>
-    AsyncEffect
-    .of(reject => resolve =>
-        jwt.verify(token, key, (error, data) => error ? reject(error) : resolve(data))
-    );
+const sign = data => key => Either.try(() => jwt.sign(data, key));
+
+const verify = token => key => Either.try(() => jwt.verify(token, key));
 
 export {
+    getJWTPrivateKeyFromEnv,
     sign,
     verify
 };

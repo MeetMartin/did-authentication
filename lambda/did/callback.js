@@ -1,7 +1,7 @@
 import { isNothing, isEqual, isArray, Either, either, validateEithers, map, flatMap, compose, reduce } from '@7urtle/lambda';
 
 import logger from '../../src/logger';
-import { getClient, createRecord, getSecret } from '../../effects/Fauna';
+import { getClient, createRecord, getFaunaSecretFromEnv } from '../../effects/Fauna';
 
 const validateRequest =
     validateEithers(
@@ -19,7 +19,7 @@ const getSuccessfulSignInEffect = request =>
         map(storeSuccessfulSignIn),
         flatMap(getData(request)),
         flatMap(getClient),
-        getSecret
+        getFaunaSecretFromEnv
     )();
 
 const errorsToError = error => isArray(error) ? reduce([])((a, c) => `${a} ${c}`)(error) : error;

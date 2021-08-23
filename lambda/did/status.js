@@ -1,8 +1,8 @@
-import { isNothing, isArray, isUndefined, isLessThan, isEqual, startsWith, Either, spy, eitherToAsyncEffect, validateEithers, map, flatMap, compose, AsyncEffect, reduce } from '@7urtle/lambda';
+import { isNothing, isArray, isUndefined, isLessThan, isEqual, startsWith, spy, Either, eitherToAsyncEffect, validateEithers, flatMap, compose, reduce } from '@7urtle/lambda';
 
 import logger from '../../src/logger';
 import { getRecordByIndex, getClient, getFaunaSecretFromEnv } from '../../effects/Fauna';
-import { sign } from '../../effects/JWT';
+import { getJWTPrivateKeyFromEnv, sign } from '../../effects/JWT';
 
 const validateRequest = request =>
     isNothing(request)
@@ -17,23 +17,6 @@ const validateSignIn =
         request => isLessThan((Date.now() * 1000 - request.ts) / 60000000)(5) ? Either.Failure(`Sign in age is more than 5 minutes.`) : Either.Success(request)
     );
 
-const error500Response = {
-    statusCode: 500,
-    body: 'Internal Server Error'
-};
-
-const getSuccessfulSignIn = client => request =>
-    compose(
-        flatMap(
-            data => getRecordByIndex({
-                client: client,
-                data: data,
-                index: 'signins_by_challengeid'
-            })
-        ),
-        validateRequest
-    )
-
 const getSignInByChallengeId = data => client =>
     getRecordByIndex({
         client: client,
@@ -44,7 +27,8 @@ const getSignInByChallengeId = data => client =>
 const errorsToError = error => isArray(error) ? reduce([])((a, c) => `${a} ${c}`)(error) : error;
 
 const errorToReasonMap = new Map([
-    ['NotFound: instance not found', 'You did not scan the QR code using the wallet.']
+    ['NotFound: instance not found', 'You did not scan the QR code using the wallet.'],
+    ['Sign in age is more than 5 minutes.', 'Sign in was verified through wallet more than 5 minutes ago. Reload the page.']
 ]);
 
 const errorToReason = error =>
@@ -65,11 +49,18 @@ const checkStatus = request =>
         logger.error('Signins check processing: ' + errorsToError(error)) &&
         ({statusCode: 200, body: JSON.stringify({ verified: false, reason: errorToReason(error) })})
     )
-    (result => console.log('test', result) || ({statusCode: 200, body: JSON.stringify({ verified: true })}));
+    (result => ({statusCode: 200, body: JSON.stringify({ verified: true, bearer: result })}));
+
+const getJWT = challengeResponse =>
+    compose(
+        flatMap(sign({did: challengeResponse.data.holder})),
+        flatMap(getJWTPrivateKeyFromEnv),
+        validateSignIn,
+    )(challengeResponse);
 
 const checkSignInStatus = request =>
     compose(
-        flatMap(response => eitherToAsyncEffect(validateSignIn(response))),
+        flatMap(response => eitherToAsyncEffect(getJWT(response))),
         flatMap(getSignInByChallengeId(request)),
         eitherToAsyncEffect,
         flatMap(getClient),

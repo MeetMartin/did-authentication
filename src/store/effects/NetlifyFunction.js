@@ -24,12 +24,13 @@ const api_url = isEqual('development')(process.env.NODE_ENV) ? 'http://localhost
  *  (MaybeData)
  * );
  */
-const getToFunction = path =>
+const getToFunction = path => headers =>
     map(response => Maybe.of(response.data))
     (
         AsyncEffect.ofPromise(() =>
             axios.get(
-                api_url + path
+                api_url + path,
+                headers
             )
         )
     );
@@ -56,16 +57,17 @@ const getToFunction = path =>
  *  (MaybeData)
  * );
  */
-const postToFunction = path => payload =>
-map(response => Maybe.of(response.data))
-(
-    AsyncEffect.ofPromise(() =>
-        axios.post(
-            api_url + path,
-            payload
+const postToFunction = path => payload => headers =>
+    map(response => Maybe.of(response.data))
+    (
+        AsyncEffect.ofPromise(() =>
+            axios.post(
+                api_url + path,
+                payload,
+                headers
+            )
         )
-    )
-);
+    );
 
 export {
     getToFunction,
