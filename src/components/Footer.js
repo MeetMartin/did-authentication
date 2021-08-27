@@ -3,11 +3,14 @@ import styled from 'styled-components';
 
 const FooterDiv = styled.div`
     color: #FFF;
-    position: absolute;
-    bottom: 40px;
-    right: 40px;
+    clear: both;
+    margin-bottom: 0;
+    padding: 20px 5px 20px 5px;
     a {
         color: #FFF;
+    }
+    @media only screen and (min-width: 768px) {
+        padding: 0 40px 40px 40px;
     }
 `;
 

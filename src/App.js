@@ -9,7 +9,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 
 const GlobalStyle  = createGlobalStyle`
-    html, body, main {
+    html, body {
         height: 100%;
         margin: 0;
         font-family: 'Roboto', sans-serif;
@@ -19,13 +19,11 @@ const GlobalStyle  = createGlobalStyle`
         background-size: cover;
         background-repeat: no-repeat;
         background-position: center center;
+        background-attachment: fixed;
         color: #000;
     }
-    h1 {
-        font-size: 3rem;
-    }
-    h2 {
-        font-size: 2.4rem;
+    main {
+        padding-top: 120px;
     }
     a {
         color: #000;
@@ -37,6 +35,14 @@ const GlobalStyle  = createGlobalStyle`
     }
     #root {
         height: 100%;
+    }
+    @media only screen and (min-width: 768px) {
+        h1 {
+            font-size: 3rem;
+        }
+        h2 {
+            font-size: 2.4rem;
+        }
     }
 `;
 

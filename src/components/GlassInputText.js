@@ -7,8 +7,11 @@ const GlassInputTextTag = styled.input`
     border: 1px solid rgba(255,255,255,0.4);
     padding: 15px;
     cursor: pointer;
-    font-size: 1.5rem;
     font-weight: 700;
+    font-size: 1.2rem;
+    @media only screen and (min-width: 768px) {
+        font-size: 1.5rem;
+    }
 `;
 
 const GlassTextField = ({value, placeholder, onClick, onChange, disabled}) => 

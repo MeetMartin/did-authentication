@@ -5,12 +5,15 @@ import { Link } from 'react-router-dom';
 import Page from './Page';
 import GlassButton from '../components/GlassButton';
 import LeftColumn from '../components/LeftColumn';
+import BraveDeveloper from '../components/BraveDeveloper';
 
 const AuthenticationOr = styled.div`
-    font-size: 1.5rem;
-    width: 300px;
-    text-align: center;
     padding: 15px;
+    @media only screen and (min-width: 768px) {
+        font-size: 1.5rem;
+        width: 300px;
+        text-align: center;
+    }
 `;
 
 const HomePage = () => {
@@ -31,6 +34,7 @@ const HomePage = () => {
                     <GlassButton>Sign Up</GlassButton>
                 </Link>
             </LeftColumn>
+            <BraveDeveloper />
         </Page>
     );
 };

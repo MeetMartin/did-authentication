@@ -35,7 +35,6 @@ const QRInfo = ({ QRInput }) => {
                     </GoogleStoreBadge>
                 </a>
             </StoreBadges>
-            <p>Scan the QR code using MATTR Wallet:</p>
             <AuthenticationQRCode QRInput={QRInput} />
         </>
     );

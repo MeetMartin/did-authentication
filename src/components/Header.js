@@ -5,7 +5,7 @@ const HeaderDiv = styled.div`
     color: #FFF;
     position: absolute;
     top: 15px;
-    left: 35px;
+    left: 5px;
     img {
         float: left;
     }
@@ -16,6 +16,9 @@ const HeaderDiv = styled.div`
         font-size: 2rem;
         position: relative;
         bottom: 12px;
+    }
+    @media only screen and (min-width: 768px) {
+        left: 35px;
     }
 `;
 

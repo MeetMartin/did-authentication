@@ -6,8 +6,11 @@ const GlassPaperDiv = styled.div`
     backdrop-filter: blur(5px);
     border-radius: 10px;
     border: 1px solid rgba(255,255,255,0.4);
-    padding: 40px;
     height: calc(100% - 80px);
+    padding: 20px 10px;
+    @media only screen and (min-width: 768px) {
+        padding: 40px;
+    }
 `;
 
 const GlassPaper = props => 
