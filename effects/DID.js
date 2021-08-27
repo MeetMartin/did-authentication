@@ -1,4 +1,4 @@
-import { AsyncEffect } from '@7urtle/lambda';
+import { isNothing, AsyncEffect } from '@7urtle/lambda';
 import axios from 'axios';
 
 /**
@@ -18,7 +18,9 @@ import axios from 'axios';
  */
 const createDID = payload =>
     AsyncEffect
-    .ofPromise(() =>
+    .of(reject => resolve =>
+        (isNothing(payload.tenant) && reject('createDID payload.tenant is Nothing.')) ||
+        (isNothing(payload.accessToken) && reject('createDID payload.accessToken is Nothing.')) ||
         axios.post(
             `https://${payload.tenant}/v1/dids`,
             {
@@ -31,12 +33,15 @@ const createDID = payload =>
                     "Authorization": `Bearer ${payload.accessToken}`
                 }
             }
-        )
+        ).then(resolve).catch(reject)
     );
 
 const readDID = payload =>
     AsyncEffect
-    .ofPromise(() =>
+    .of(reject => resolve =>
+        (isNothing(payload.tenant) && reject('readDID payload.tenant is Nothing.')) ||
+        (isNothing(payload.did) && reject('readDID payload.did is Nothing.')) ||
+        (isNothing(payload.accessToken) && reject('readDID payload.accessToken is Nothing.')) ||
         axios.get(
             `https://${payload.tenant}/v1/dids/${payload.did}`,
             {
@@ -46,7 +51,7 @@ const readDID = payload =>
                     "Authorization": `Bearer ${payload.accessToken}`
                 }
             }
-        )
+        ).then(resolve).catch(reject)
     );
 
 export {

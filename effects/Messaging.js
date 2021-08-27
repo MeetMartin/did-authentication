@@ -3,7 +3,11 @@ import axios from 'axios';
 
 const createJWS = payload =>
     AsyncEffect
-    .ofPromise(() =>
+    .of(reject => resolve =>
+        (isNothing(payload.tenant) && reject('createJWS payload.tenant is Nothing.')) ||
+        (isNothing(payload.accessToken) && reject('createJWS payload.accessToken is Nothing.')) ||
+        (isNothing(payload.didUrl) && reject('createJWS payload.didUrl is Nothing.')) ||
+        (isNothing(payload.request) && reject('createJWS payload.request is Nothing.')) ||
         axios.post(
             `https://${payload.tenant}/v1/messaging/sign`,
             {
@@ -17,7 +21,7 @@ const createJWS = payload =>
                     "Authorization": `Bearer ${payload.accessToken}`
                 }
             }
-        )
+        ).then(resolve).catch(reject)
     );
 
 export {

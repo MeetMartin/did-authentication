@@ -1,4 +1,4 @@
-import { AsyncEffect } from '@7urtle/lambda';
+import { isNothing, AsyncEffect } from '@7urtle/lambda';
 import axios from 'axios';
 import shortid from 'shortid';
 
@@ -19,7 +19,9 @@ import shortid from 'shortid';
  */
 const createPresentationTemplate = payload =>
     AsyncEffect
-    .ofPromise(() =>
+    .of(reject => resolve =>
+        (isNothing(payload.tenant) && reject('createPresentationTemplate payload.tenant is Nothing.')) ||
+        (isNothing(payload.accessToken) && reject('createPresentationTemplate payload.accessToken is Nothing.')) ||
         axios.post(
             `https://${payload.tenant}/v1/presentations/templates`,
             {
@@ -38,12 +40,18 @@ const createPresentationTemplate = payload =>
                     "Authorization": `Bearer ${payload.accessToken}`
                 }
             }
-        )
+        ).then(resolve).catch(reject)
     );
 
 const createPresentationRequest = payload =>
     AsyncEffect
-    .ofPromise(() =>
+    .of(reject => resolve =>
+        (isNothing(payload.tenant) && reject('createPresentationRequest payload.tenant is Nothing.')) ||
+        (isNothing(payload.accessToken) && reject('createPresentationRequest payload.accessToken is Nothing.')) ||
+        (isNothing(payload.requestId) && reject('createPresentationRequest payload.requestId is Nothing.')) ||
+        (isNothing(payload.did) && reject('createPresentationRequest payload.did is Nothing.')) ||
+        (isNothing(payload.templateID) && reject('createPresentationRequest payload.templateID is Nothing.')) ||
+        (isNothing(payload.presentationCallbackURL) && reject('createPresentationRequest payload.presentationCallbackURL is Nothing.')) ||
         axios.post(
             `https://${payload.tenant}/v1/presentations/requests`,
             {
@@ -60,7 +68,7 @@ const createPresentationRequest = payload =>
                     "Authorization": `Bearer ${payload.accessToken}`
                 }
             }
-        )
+        ).then(resolve).catch(reject)
     );
 
 export {

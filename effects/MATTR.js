@@ -1,4 +1,4 @@
-import { AsyncEffect } from '@7urtle/lambda';
+import { isNothing, AsyncEffect } from '@7urtle/lambda';
 import axios from 'axios';
 
 /**
@@ -18,7 +18,9 @@ import axios from 'axios';
  */
  const requestMATTRAccessToken = payload =>
     AsyncEffect
-    .ofPromise(() =>
+    .of(reject => resolve =>
+        (isNothing(payload.clientId) && reject('requestMATTRAccessToken payload.clientId is Nothing.')) ||
+        (isNothing(payload.clientSecret) && reject('requestMATTRAccessToken payload.clientSecret is Nothing.')) ||
         axios.post(
             'https://auth.mattr.global/oauth/token',
             {
@@ -27,7 +29,7 @@ import axios from 'axios';
                 "audience": "https://vii.mattr.global",
                 "grant_type": "client_credentials"
             }
-        )
+        ).then(resolve).catch(reject)
     );
 
  export {

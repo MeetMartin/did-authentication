@@ -1,10 +1,9 @@
-import { isNothing, Either } from '@7urtle/lambda';
+import { Either } from '@7urtle/lambda';
 import jwt from 'jsonwebtoken';
 
-const getJWTPrivateKeyFromEnv = () =>
-    isNothing(process.env.JWT_PRIVATE_KEY)
-    ? Either.Failure('process.env.JWT_PRIVATE_KEY is Nothing.')
-    : Either.Success(process.env.JWT_PRIVATE_KEY);
+import { getValueFromEnv } from './Environment';
+
+const getJWTPrivateKeyFromEnv = () => getValueFromEnv('JWT_PRIVATE_KEY');
 
 const sign = data => key => Either.try(() => jwt.sign(data, key));
 
