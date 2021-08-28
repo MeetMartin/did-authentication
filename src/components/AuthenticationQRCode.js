@@ -1,9 +1,9 @@
 import React, { useEffect, useContext, useState } from 'react';
 import QRCode from 'qrcode.react';
-import { isEqual, isNothing, isJust, includes, reduce } from '@7urtle/lambda';
+import { isEqual, isNothing, isJust, includes, reduce, lowerCaseOf } from '@7urtle/lambda';
 
 import { StoreContext } from '../store/StoreContext';
-import { reducer } from '../store/reducers';
+import GlassButton from './GlassButton';
 
 const AuthenticationQRCode = ({ QRInput }) => {
     const { state, actions } = useContext(StoreContext);
@@ -16,8 +16,8 @@ const AuthenticationQRCode = ({ QRInput }) => {
     const mobileDevices = ['ipad', 'iphone', 'ipod', 'android'];
     const includesAnyOf = where => reduce(false)((a, c) => includes(c)(where) ? true : a);
     const isDeviceMobile = () =>
-        includesAnyOf(navigator.userAgent)(mobileDevices) ||
-        includesAnyOf(navigator.platform)(mobileDevices) ||
+        includesAnyOf(lowerCaseOf(navigator.userAgent))(mobileDevices) ||
+        includesAnyOf(lowerCaseOf(navigator.platform))(mobileDevices) ||
         (includes("Mac")(navigator.userAgent) && "ontouchend" in document);
 
     useEffect(() => isDevelopment && isNothing(state.ngrokURL) && actions.requestNgrokURL(), []);
@@ -33,7 +33,11 @@ const AuthenticationQRCode = ({ QRInput }) => {
                     {!isDevelopment && <QRCode value={didcomm} size={300} />}
                 </>
             ||
-                <p><a href={`global.mattr.wallet://accept/${window.btoa(unescape(encodeURIComponent(didcomm)))}`}>Authenticate in MATTR Wallet on Mobile</a></p>
+                <p>
+                    <a href={`global.mattr.wallet://accept/${window.btoa(unescape(encodeURIComponent(didcomm)))}`}>
+                        <GlassButton>Authenticate in MATTR Wallet on Mobile</GlassButton>
+                    </a>
+                </p>
             }
         </>
     );
