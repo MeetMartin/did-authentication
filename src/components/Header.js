@@ -13,9 +13,13 @@ const HeaderDiv = styled.div`
         color: #FFF;
         display: block;
         float: left;
-        font-size: 2rem;
+        font-size: 1rem;
         position: relative;
-        bottom: 12px;
+        top: 15px;
+        @media only screen and (min-width: 768px) {
+            font-size: 2rem;
+            bottom: 12px;
+        }
     }
     @media only screen and (min-width: 768px) {
         left: 35px;
