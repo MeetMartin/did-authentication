@@ -18,7 +18,7 @@ const HeaderDiv = styled.div`
         top: 15px;
         @media only screen and (min-width: 768px) {
             font-size: 2rem;
-            bottom: 12px;
+            top: -12px;
         }
     }
     @media only screen and (min-width: 768px) {
