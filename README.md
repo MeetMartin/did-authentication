@@ -17,7 +17,7 @@ decentralized identifiers and Fauna is used for database storing sign in and use
 
 You will need .env file. You can find the template for it in .env_template
 
-Apart from installing packages you will also need to to some setup with MATTR to obtain your own own DID Key and DID Presentation template
+Apart from installing packages you will also need to do some setup with MATTR to obtain your own DID Key and DID Presentation template
 which is currently done through:
 ```
 $ npm run setup-did
