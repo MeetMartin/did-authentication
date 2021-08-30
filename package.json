@@ -17,7 +17,7 @@
   "author": "Martin Novak",
   "license": "ISC",
   "devDependencies": {
-    "@7urtle/lambda": "^1.3.2",
+    "@7urtle/lambda": "^1.3.5",
     "@7urtle/logger": "^1.1.4",
     "@7urtle/server": "^1.0.14",
     "@babel/core": "^7.15.0",
@@ -41,7 +41,7 @@
     "qrcode.react": "^1.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-router-dom": "^5.2.0",
+    "react-router-dom": "^5.2.1",
     "shortid": "^2.2.16",
     "styled-components": "^5.3.1",
     "webpack": "^5.51.1",

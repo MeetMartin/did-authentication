@@ -1,4 +1,4 @@
-import { AsyncEffect } from '@7urtle/lambda';
+import { isNothing, AsyncEffect } from '@7urtle/lambda';
 import axios from 'axios';
 
 const createJWS = payload =>

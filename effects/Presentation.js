@@ -50,14 +50,14 @@ const createPresentationRequest = payload =>
         (isNothing(payload.accessToken) && reject('createPresentationRequest payload.accessToken is Nothing.')) ||
         (isNothing(payload.requestId) && reject('createPresentationRequest payload.requestId is Nothing.')) ||
         (isNothing(payload.did) && reject('createPresentationRequest payload.did is Nothing.')) ||
-        (isNothing(payload.templateID) && reject('createPresentationRequest payload.templateID is Nothing.')) ||
+        (isNothing(payload.templateId) && reject('createPresentationRequest payload.templateId is Nothing.')) ||
         (isNothing(payload.presentationCallbackURL) && reject('createPresentationRequest payload.presentationCallbackURL is Nothing.')) ||
         axios.post(
             `https://${payload.tenant}/v1/presentations/requests`,
             {
                 "challenge": payload.requestId,
                 "did": payload.did,
-                "templateId": payload.templateID,
+                "templateId": payload.templateId,
                 "expiresTime": 1638836401000,
                 "callbackUrl": payload.presentationCallbackURL
             },

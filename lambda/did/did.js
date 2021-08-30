@@ -19,4 +19,4 @@ const router = path => request => {
 
 const handler = async (event, context) => router(event.path)(event.body);
 
-export {handler};
+export { handler };
