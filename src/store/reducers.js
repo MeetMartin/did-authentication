@@ -3,15 +3,17 @@ import types from "./types";
 
 const stateFromLocalStorage = sessionStorage.getItem('state');
 
-const initialState = JSON.parse(stateFromLocalStorage) || {
-    ngrokURL: null,
-    userName: '',
-    signUpError: '',
-    bearer: '',
-    requestedSignUp: false,
-    requestedSignIn: false,
-    authenticated: false
-};
+const initialState = stateFromLocalStorage
+    ? {...JSON.parse(stateFromLocalStorage), ngrokURL: null}
+    : {
+        ngrokURL: null,
+        userName: '',
+        signUpError: '',
+        bearer: '',
+        requestedSignUp: false,
+        requestedSignIn: false,
+        authenticated: false
+    };
 
 const reducer = (state = initialState, action) => {
 
