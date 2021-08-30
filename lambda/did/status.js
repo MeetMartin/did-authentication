@@ -42,15 +42,6 @@ const errorToReason = error =>
         : errorToReasonMap.get(error + '')
     );
 
-const checkStatus = request =>
-    checkSignInStatus(request)
-    .trigger
-    (error =>
-        logger.error('Signins check processing: ' + errorsToError(error)) &&
-        ({statusCode: 200, body: JSON.stringify({ verified: false, reason: errorToReason(error) })})
-    )
-    (result => ({statusCode: 200, body: JSON.stringify({ verified: true, bearer: result })}));
-
 const getJWT = challengeResponse =>
     compose(
         flatMap(sign({did: challengeResponse.data.holder})),
@@ -67,6 +58,15 @@ const checkSignInStatus = request =>
         flatMap(getFaunaSecretFromEnv),
         validateRequest
     )(request);
+
+const checkStatus = request =>
+    checkSignInStatus(request)
+    .trigger
+    (error =>
+        logger.error('Signins check processing: ' + errorsToError(error)) &&
+        ({statusCode: 200, body: JSON.stringify({ verified: false, reason: errorToReason(error) })})
+    )
+    (result => ({statusCode: 200, body: JSON.stringify({ verified: true, bearer: result })}));
 
 export {
     checkStatus
