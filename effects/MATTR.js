@@ -29,7 +29,7 @@ import axios from 'axios';
                 "audience": "https://vii.mattr.global",
                 "grant_type": "client_credentials"
             }
-        ).then(resolve).catch(reject)
+        ).then(resolve).catch(error => reject(`Requesting MATTR Acccess Token: ${error}`))
     );
 
  export {

@@ -1,4 +1,4 @@
-import { eitherToAsyncEffect, flatMap, compose, isEqual } from '@7urtle/lambda';
+import { passThrough, deepInspect, eitherToAsyncEffect, flatMap, compose, isEqual } from '@7urtle/lambda';
 
 import logger from '../../src/logger';
 import { getRecordByIndex, getClient, getFaunaSecretFromEnv } from '../../effects/Fauna';
@@ -12,6 +12,7 @@ const getUserByDID = data => client =>
 
 const readUserFromFauna = did =>
     compose(
+        map(passThrough(response => logger.debug(`Read User From Fauna: ${deepInspect(response.data)}.`))),
         flatMap(getUserByDID(did)),
         eitherToAsyncEffect,
         flatMap(getClient),

@@ -21,7 +21,7 @@ const createJWS = payload =>
                     "Authorization": `Bearer ${payload.accessToken}`
                 }
             }
-        ).then(resolve).catch(reject)
+        ).then(resolve).catch(error => reject(`Creating JWS: ${error}`))
     );
 
 export {

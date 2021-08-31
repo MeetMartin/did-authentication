@@ -20,7 +20,7 @@ const createRecord = request =>
                 faunadb.query.Collection(request.collection),
                 {data: request.data}
             )
-        ).then(resolve).catch(reject)
+        ).then(resolve).catch(error => reject(`Creating Fauna Record: ${error}`))
     );
 
 const getRecordByIndex = request =>
@@ -36,7 +36,7 @@ const getRecordByIndex = request =>
                     request.data
                 )
             )
-        ).then(resolve).catch(reject)
+        ).then(resolve).catch(error => reject(`Getting Fauna Record By Index: ${error}`))
     );
 
 const deleteRecordByIndex = request =>
@@ -57,7 +57,7 @@ const deleteRecordByIndex = request =>
                     )
                 )
             )
-        ).then(resolve).catch(reject)
+        ).then(resolve).catch(error => reject(`Deleting Fauna Record By Index: ${error}`))
     );
 
 export {

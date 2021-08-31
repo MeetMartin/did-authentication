@@ -1,4 +1,4 @@
-import { map, flatMap, compose, isNothing, Failure, Success, mergeEithers, eitherToAsyncEffect, mergeAsyncEffects } from '@7urtle/lambda';
+import { passThrough, deepInspect, map, flatMap, compose, isNothing, Failure, Success, mergeEithers, eitherToAsyncEffect, mergeAsyncEffects } from '@7urtle/lambda';
 
 import logger from '../../src/logger';
 import { getValueFromEnv } from '../../effects/Environment';
@@ -63,8 +63,10 @@ const getJWSPresentationRequest = input =>
 
 const getAuthenticationEffect =
     compose(
+        map(passThrough(url => logger.debug(`DID Authentication Redirect URL: ${deepInspect(url)}`))),
         flatMap(getJWSPresentationRequest),
         eitherToAsyncEffect,
+        map(passThrough(input => logger.debug(`DID Authentication Input Variables: ${deepInspect(input)}`))),
         getInputVariables
     );
 

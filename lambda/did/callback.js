@@ -1,4 +1,4 @@
-import { isEqual, isNothing, map, flatMap, compose, Failure, Success, validateEithers, eitherToAsyncEffect } from '@7urtle/lambda';
+import { passThrough, deepInspect, isEqual, isNothing, map, flatMap, compose, Failure, Success, validateEithers, eitherToAsyncEffect } from '@7urtle/lambda';
 
 import logger from '../../src/logger';
 import { getClient, createRecord, getFaunaSecretFromEnv } from '../../effects/Fauna';
@@ -14,11 +14,13 @@ const storeSuccessfulSignIn = request => createRecord({client: request.client, d
 
 const getSuccessfulSignInEffect = request =>
     compose(
+        map(passThrough(() => logger.debug('DID Authentication Callback Request Stored In Fauna.'))),
         flatMap(client => storeSuccessfulSignIn({client: client, data: request})),
         eitherToAsyncEffect,
         flatMap(getClient),
         getFaunaSecretFromEnv,
-        validateRequest
+        validateRequest,
+        map(passThrough(request => logger.debug(`DID Authentication Callback Request: ${deepInspect(request)}`))),
     )(request);
 
 const processCallback = request =>

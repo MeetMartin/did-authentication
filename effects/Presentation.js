@@ -40,7 +40,7 @@ const createPresentationTemplate = payload =>
                     "Authorization": `Bearer ${payload.accessToken}`
                 }
             }
-        ).then(resolve).catch(reject)
+        ).then(resolve).catch(error => reject(`Creating Presentation Template: ${error}`))
     );
 
 const createPresentationRequest = payload =>
@@ -68,7 +68,7 @@ const createPresentationRequest = payload =>
                     "Authorization": `Bearer ${payload.accessToken}`
                 }
             }
-        ).then(resolve).catch(reject)
+        ).then(resolve).catch(error => reject(`Creating Presentation Request: ${error}`))
     );
 
 export {

@@ -1,4 +1,4 @@
-import { isNothing, isArray, isUndefined, isLessThan, isEqual, startsWith, spy, Either, eitherToAsyncEffect, validateEithers, flatMap, compose, reduce } from '@7urtle/lambda';
+import { passThrough, deepInspect, isNothing, isArray, isUndefined, isLessThan, isEqual, startsWith, Either, eitherToAsyncEffect, validateEithers, flatMap, compose, reduce } from '@7urtle/lambda';
 
 import logger from '../../src/logger';
 import { getRecordByIndex, getClient, getFaunaSecretFromEnv } from '../../effects/Fauna';
@@ -51,12 +51,14 @@ const getJWT = challengeResponse =>
 
 const checkSignInStatus = request =>
     compose(
+        map(passThrough(request => logger.debug(`DID Authentication Status Request: ${deepInspect(request)}`))),
         flatMap(response => eitherToAsyncEffect(getJWT(response))),
         flatMap(getSignInByChallengeId(request)),
         eitherToAsyncEffect,
         flatMap(getClient),
         flatMap(getFaunaSecretFromEnv),
-        validateRequest
+        validateRequest,
+        map(passThrough(request => logger.debug(`DID Authentication Status Request: ${deepInspect(request)}`)))
     )(request);
 
 const checkStatus = request =>
