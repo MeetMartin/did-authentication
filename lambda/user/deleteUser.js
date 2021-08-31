@@ -1,4 +1,4 @@
-import { passThrough, deepInspect, eitherToAsyncEffect, flatMap, compose } from '@7urtle/lambda';
+import { passThrough, deepInspect, eitherToAsyncEffect, map, flatMap, compose } from '@7urtle/lambda';
 
 import logger from '../../src/logger';
 import { deleteRecordByIndex, getClient, getFaunaSecretFromEnv } from '../../effects/Fauna';
