@@ -17,7 +17,7 @@
   "author": "Martin Novak",
   "license": "ISC",
   "devDependencies": {
-    "@7urtle/lambda": "^1.3.5",
+    "@7urtle/lambda": "^1.2.9",
     "@7urtle/logger": "^1.1.4",
     "@7urtle/server": "^1.0.14",
     "@babel/core": "^7.15.0",

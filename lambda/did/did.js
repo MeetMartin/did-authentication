@@ -1,5 +1,5 @@
 //import { startsWith, lastOf, split, replace } from '@7urtle/lambda';
-import axios from 'axios';
+import { isEqual } from '@7urtle/lambda';
 
 /*import { triggerAuthentication } from './authentication';
 import { processCallback } from './callback';
@@ -14,6 +14,6 @@ const router = path => request =>
     body: 'Not Found'
   });*/
 
-const handler = async (event, context) => console.log('test', event.path, event.body, axios.get('https://www.meet-martin.com').then(() => console.log('meet-martin'))) || ({statusCode: 200, body: 'hello there'}); //router(replace('')('/.netlify/functions')(event.path))(event.body);
+const handler = async (event, context) => console.log('test', event.path, event.body, isEqual('jedna')('jedna')) || ({statusCode: 200, body: 'hello there'}); //router(replace('')('/.netlify/functions')(event.path))(event.body);
 
 export { handler };
