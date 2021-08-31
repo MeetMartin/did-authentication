@@ -1,4 +1,4 @@
-import { startsWith, lastOf, split } from '@7urtle/lambda';
+import { startsWith, lastOf, split, replace } from '@7urtle/lambda';
 
 import { triggerAuthentication } from './authentication';
 import { processCallback } from './callback';
@@ -12,7 +12,8 @@ const router = path => request =>
     statusCode: 404,
     body: 'Not Found'
   });
+console.log('hello world');
 
-const handler = async (event, context) => router(event.path)(event.body);
+const handler = async (event, context) => router(replace('')('/.netlify/functions')(event.path))(event.body);
 
 export { handler };
