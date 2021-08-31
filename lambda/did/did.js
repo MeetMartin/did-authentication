@@ -1,5 +1,5 @@
 //import { startsWith, lastOf, split, replace } from '@7urtle/lambda';
-import { isEqual } from 'C:/Users/ragnarecek/code/lambda/dist/lambda.min.js';
+import { isEqual } from '@7urtle/lambda';
 
 /*import { triggerAuthentication } from './authentication';
 import { processCallback } from './callback';
