@@ -53,7 +53,7 @@ const BraveDeveloper = ({children}) =>
         <p>All code base is open-sourced and your <a href='https://www.youtube.com/watch?v=mRr4HPMckpA'target='_blank' title='GitHub Pull Request: How to contribute to Open Source'>pull requests</a> are welcomed to contribute.</p>
         <p>For more React and JavaScript functional programming, explore:</p>
         <ul>
-            <li><a href='https://www.youtube.com/channel/UCkUWDKByhIbPVzu1H47cVow' target='_blank' title='YouTube React and JavaScript Functional Programming'>7urtle JavaScript YouTube Cannel</a></li>
+            <li><a href='https://www.youtube.com/channel/UCkUWDKByhIbPVzu1H47cVow' target='_blank' title='YouTube React and JavaScript Functional Programming'>7urtle JavaScript YouTube Channel</a></li>
             <li><a href='https://meet-martin.medium.com/' target='_blank' title='Medium Programming and Agile'>Meet Martin Medium articles</a></li>
         </ul>
         <p>See you with the next project :)</p>
