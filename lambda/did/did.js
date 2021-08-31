@@ -1,6 +1,7 @@
-import { startsWith, lastOf, split, replace } from '@7urtle/lambda';
+//import { startsWith, lastOf, split, replace } from '@7urtle/lambda';
+import axios from 'axios';
 
-import { triggerAuthentication } from './authentication';
+/*import { triggerAuthentication } from './authentication';
 import { processCallback } from './callback';
 import { checkStatus } from './status';
   
@@ -11,9 +12,8 @@ const router = path => request =>
   ({
     statusCode: 404,
     body: 'Not Found'
-  });
-console.log('hello world');
+  });*/
 
-const handler = async (event, context) => router(replace('')('/.netlify/functions')(event.path))(event.body);
+const handler = async (event, context) => console.log('test', event.path, event.body, axios.get('https://www.meet-martin.com').then(() => console.log('meet-martin'))) || ({statusCode: 200, body: 'hello there'}); //router(replace('')('/.netlify/functions')(event.path))(event.body);
 
 export { handler };
