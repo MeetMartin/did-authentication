@@ -7,6 +7,22 @@ import { createPresentationRequest } from '../../effects/Presentation';
 import { readDID } from '../../effects/DID';
 import { createJWS } from '../../effects/Messaging';
 
+let timer = 0;
+let updatedTimer = 0;
+const startTimer = input => {
+    timer = Date.now();
+    updatedTimer = timer;
+    console.log('Performance timer started.');
+    return input;
+};
+const updateTimer = where => input => {
+    const totalTimer = Date.now() - timer;
+    const sectionTimer = Date.now() - updatedTimer;
+    console.log(`Total: ${totalTimer} ms (${totalTimer/1000} s) | Section: ${sectionTimer} ms (${sectionTimer/1000}) s | Performance timer at ${where}.`);
+    updatedTimer = Date.now();
+    return input;
+};
+
 const getId = id => isNothing(id) ? Failure('ID url path is Nothing.') : Success(id);
 
 const getVariables = id =>
@@ -49,25 +65,33 @@ const getJWS = request =>
     compose(
         map(jws => getJWSURL({tenant: request.tenant, jws: jws})),
         map(result => result.data),
+        map(updateTimer('created jws')),
         flatMap(data => createJWS({...request, ...data})),
         map(responses => ({request: responses[0].data?.request, didUrl: responses[1].data?.didDocument?.authentication[0]})),
+        map(updateTimer('got presentation request and did')),
         () => getPresentationRequestAndDID(request)
     )();
 
 const getJWSPresentationRequest = input =>
     compose(
+        map(updateTimer('got jws')),
         flatMap(token => getJWS({accessToken: token, ...input})),
         map(response => response.data?.access_token),
+        map(updateTimer('got mattr access token')),
         () => requestMATTRAccessToken({clientId: input.clientId, clientSecret: input.clientSecret})
     )();
 
 const getAuthenticationEffect =
     compose(
+        map(updateTimer('end of main composition')),
         map(passThrough(url => logger.debug(`DID Authentication Redirect URL: ${deepInspect(url)}`))),
         flatMap(getJWSPresentationRequest),
+        map(updateTimer('converted either to asynceffect')),
         eitherToAsyncEffect,
         map(passThrough(input => logger.debug(`DID Authentication Input Variables: ${deepInspect(input)}`))),
-        getInputVariables
+        map(updateTimer('got variables')),
+        getInputVariables,
+        startTimer,
     );
 
 const triggerAuthentication = id =>
