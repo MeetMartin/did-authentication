@@ -12,13 +12,13 @@ let updatedTimer = 0;
 const startTimer = input => {
     timer = Date.now();
     updatedTimer = timer;
-    console.log('Performance timer started.');
+    //console.log('Performance timer started.');
     return input;
 };
 const updateTimer = where => input => {
     const totalTimer = Date.now() - timer;
     const sectionTimer = Date.now() - updatedTimer;
-    console.log(`Total: ${totalTimer} ms (${totalTimer/1000} s) | Section: ${sectionTimer} ms (${sectionTimer/1000}) s | Performance timer at ${where}.`);
+    //console.log(`Total: ${totalTimer} ms (${totalTimer/1000} s) | Section: ${sectionTimer} ms (${sectionTimer/1000}) s | Performance timer at ${where}.`);
     updatedTimer = Date.now();
     return input;
 };
