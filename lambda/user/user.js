@@ -1,4 +1,4 @@
-import { isNothing, substr, flatMap, compose, Either, either } from '@7urtle/lambda';
+import { isNothing, substr, flatMap, compose, Either, either, lowerCaseOf } from '@7urtle/lambda';
 
 import logger from '../../src/logger';
 import { verify, getJWTPrivateKeyFromEnv } from '../../effects/JWT';
@@ -21,7 +21,7 @@ const authorize = event =>
     )(event);
 
 const router = event => decodedJWT => {
-    switch(event.method) {
+    switch(lowerCaseOf(event.method || event.httpMethod)) {
         case 'get':
             return readUser(decodedJWT.did);
         case 'post':
