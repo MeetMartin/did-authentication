@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 
 import Page from './Page';
 import GlassButton from '../components/GlassButton';
@@ -19,6 +20,19 @@ const AuthenticationOr = styled.div`
 const HomePage = () => {
     return (
         <Page>
+            <Helmet>
+                <title>DID Authentication Demonstration | DID Auth 7urtle JavaScript</title>
+                <meta property='og:title' content="DID Authentication Demonstration | 7urtle JavaScript" />
+                <meta name='twitter:title' content="DID Authentication Demonstration | 7urtle JavaScript" />
+                <meta name='description' content='Authentication using Decentralized Identifiers (DIDs), user-controlled digital identities. Demonstration with full GitHub project, YouTube video, and Medium article for you.' />
+                <meta name='og:description' content='Authentication using Decentralized Identifiers (DIDs), user-controlled digital identities. Demonstration with full GitHub project, YouTube video, and Medium article for you.' />
+                <meta name='twitter:description' content='Authentication using Decentralized Identifiers (DIDs), user-controlled digital identities. Demonstration with full GitHub project, YouTube video, and Medium article for you.' />
+                <meta property='og:locale' content='en_EN' />
+                <meta property='og:type' content='website' />
+                <meta property='og:image' content={require('../assets/did-authentication.jpg').default} />
+                <meta property='twitter:image' content={require('../assets/did-authentication.jpg').default} />
+                <meta name='twitter:card' content='summary_large_image' />
+            </Helmet>
             <LeftColumn>
                 <h1>
                     Decentralized Identifiers<br />

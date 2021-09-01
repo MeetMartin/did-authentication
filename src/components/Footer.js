@@ -16,7 +16,7 @@ const FooterDiv = styled.div`
 
 const Footer = () => 
     <FooterDiv>
-        Made by <a href='http://www.meet-martin.com' title='Martin Novak' target='_blank'>Martin Novak</a>.
+        Made by <a href='http://www.meet-martin.com' title='Martin Novak' target='_blank'>Martin Novak</a>, 2021. No cookies. No analytics. No tracking.
     </FooterDiv>;
 
 export default Footer;

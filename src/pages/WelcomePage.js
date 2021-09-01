@@ -22,6 +22,19 @@ const WelcomePage = () => {
 
     return(
         <AuthenticatedPage>
+            <Helmet>
+                <title>DID Authentication Success | DID Auth 7urtle JavaScript</title>
+                <meta property='og:title' content="DID Authentication Demonstration | 7urtle JavaScript" />
+                <meta name='twitter:title' content="DID Authentication Demonstration | 7urtle JavaScript" />
+                <meta name='description' content='Authentication using Decentralized Identifiers (DIDs), user-controlled digital identities. Demonstration with full GitHub project, YouTube video, and Medium article for you.' />
+                <meta name='og:description' content='Authentication using Decentralized Identifiers (DIDs), user-controlled digital identities. Demonstration with full GitHub project, YouTube video, and Medium article for you.' />
+                <meta name='twitter:description' content='Authentication using Decentralized Identifiers (DIDs), user-controlled digital identities. Demonstration with full GitHub project, YouTube video, and Medium article for you.' />
+                <meta property='og:locale' content='en_EN' />
+                <meta property='og:type' content='website' />
+                <meta property='og:image' content={require('../assets/did-authentication.jpg').default} />
+                <meta property='twitter:image' content={require('../assets/did-authentication.jpg').default} />
+                <meta name='twitter:card' content='summary_large_image' />
+            </Helmet>
             <LeftColumn>
                 <h1>Welcome, {state.userName}!</h1>
                 <p>
