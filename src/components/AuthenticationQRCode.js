@@ -37,16 +37,6 @@ const AuthenticationQRCode = ({ QRInput }) => {
                     <a href={`global.mattr.wallet://accept/${window.btoa(unescape(encodeURIComponent(didcomm)))}`}>
                         <GlassButton>Authenticate in MATTR Wallet on Mobile</GlassButton>
                     </a>
-                    <div>{`global.mattr.wallet://accept/${window.btoa(unescape(encodeURIComponent(didcomm)))}`}</div>
-                    <a href={`global.mattr.wallet://accept/${window.btoa((encodeURIComponent(didcomm)))}`}>
-                        <GlassButton>Authenticate in MATTR Wallet on Mobile</GlassButton>
-                    </a>
-                    <div>{`global.mattr.wallet://accept/${window.btoa((encodeURIComponent(didcomm)))}`}</div>
-                    <a href={`global.mattr.wallet://accept/${window.btoa(((didcomm)))}`}>
-                        <GlassButton>Authenticate in MATTR Wallet on Mobile</GlassButton>
-                    </a>
-                    <div>{`global.mattr.wallet://accept/${window.btoa(((didcomm)))}`}</div>
-                    <div>{`global.mattr.wallet://accept/${didcomm}`}</div>
                 </p>
             }
         </>

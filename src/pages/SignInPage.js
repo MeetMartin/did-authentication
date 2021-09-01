@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import shortid from 'shortid';
 import styled from 'styled-components';
@@ -16,7 +16,9 @@ const ErrorParagraph = styled.p`
 
 const SignInPage = () => {
     const { state, actions } = useContext(StoreContext);
-    const challengeId = shortid.generate();
+
+    const [challengeId, setChallengeId] = useState(shortid.generate());
+
     const history = useHistory();
     
     useEffect(() => {
