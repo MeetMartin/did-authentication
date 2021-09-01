@@ -27,7 +27,7 @@ const getSignInByChallengeId = data => client =>
 const errorsToError = error => isArray(error) ? reduce([])((a, c) => `${a} ${c}`)(error) : error;
 
 const errorToReasonMap = new Map([
-    ['NotFound: instance not found', 'You did not scan the QR code using the wallet.'],
+    ['Getting Fauna Record By Index: NotFound: instance not found', 'You did not scan the QR code using the wallet.'],
     ['Sign in age is more than 5 minutes.', 'Sign in was verified through wallet more than 5 minutes ago. Reload the page.']
 ]);
 

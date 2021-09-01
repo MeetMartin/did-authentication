@@ -13,38 +13,6 @@ const router = path => request =>
     body: 'Not Found'
   });
 
-let timer = 0;
-let updatedTimer = 0;
-const startTimer = input => {
-    timer = Date.now();
-    updatedTimer = timer;
-    console.log('DID Performance timer started.');
-    return input;
-};
-const updateTimer = where => input => {
-    const totalTimer = Date.now() - timer;
-    const sectionTimer = Date.now() - updatedTimer;
-    console.log(`Total: ${totalTimer} ms (${totalTimer/1000} s) | Section: ${sectionTimer} ms (${sectionTimer/1000}) s | DID Performance timer at ${where}.`);
-    updatedTimer = Date.now();
-    return input;
-};
-
-const handler = async (event, context) => {
-  startTimer();
-  const routerResult = router(replace('')('/.netlify/functions')(event.path))(event.body);
-  console.log('got router result', routerResult);
-  updateTimer('after router result')();
-  return routerResult
-  .then(result => {
-    updateTimer('result in router result promise')();
-    console.log('result', result);
-    return result;
-  })
-  .catch(error => {
-    updateTimer('error in router result promise')();
-    console.log('error', error);
-    return error;
-  })
-}
+const handler = async (event, context) => router(replace('')('/.netlify/functions')(event.path))(event.body);
 
 export { handler };
