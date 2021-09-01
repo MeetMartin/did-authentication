@@ -23,7 +23,7 @@ const readUser = did =>
     readUserFromFauna(did)()
     .trigger
     (error =>
-        isEqual('NotFound: instance not found')(error + '')
+        isEqual('Getting Fauna Record By Index: NotFound: instance not found')(error + '')
         ? ({statusCode: 200, body: JSON.stringify({reason: 'You are not a member yet. Please sign up first.'})})
         : logger.error(`User reading: ${error}`) && ({statusCode: 500, body: 'Internal Error'}))
     (response => ({statusCode: 200, body: JSON.stringify({userName: response.data.userName})}));
