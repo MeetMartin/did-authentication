@@ -12,7 +12,7 @@ const AuthenticationOr = styled.div`
     padding: 15px;
     @media only screen and (min-width: 768px) {
         font-size: 1.5rem;
-        width: 300px;
+        width: 260px;
         text-align: center;
     }
 `;

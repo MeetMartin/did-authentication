@@ -15,7 +15,7 @@ const GlobalStyle  = createGlobalStyle`
         font-family: 'Roboto', sans-serif;
     }
     body {
-        background-image: url(${require('./assets/city.jpg').default});
+        background-image: url(${require('./assets/glenorchy.jpg').default});
         background-size: cover;
         background-repeat: no-repeat;
         background-position: center center;
