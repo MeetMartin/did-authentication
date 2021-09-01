@@ -4,12 +4,17 @@ import { Link } from 'react-router-dom';
 
 import AuthenticatedPage from './AuthenticatedPage';
 import { StoreContext } from '../store/StoreContext';
-import GlassPaper from '../components/GlassPaper';
+import LeftColumn from '../components/LeftColumn';
+import BraveDeveloper from '../components/BraveDeveloper';
 import GlassButton from '../components/GlassButton';
 
-const WelcomePageDiv = styled.div`
-    margin: 100px;
-    max-width: 1000px;
+const AuthenticationOr = styled.div`
+    padding: 15px;
+    @media only screen and (min-width: 768px) {
+        font-size: 1.5rem;
+        width: 300px;
+        text-align: center;
+    }
 `;
 
 const WelcomePage = () => {
@@ -17,22 +22,21 @@ const WelcomePage = () => {
 
     return(
         <AuthenticatedPage>
-            <WelcomePageDiv>
-                <GlassPaper>
-                    <h1>Welcome, {state.userName}!</h1>
-                    <p>
-                        The database is set to store your account only for 30 days.
-                    </p>
-                    <Link to='/' onClick={() => actions.requestSignOut()}>
-                        <GlassButton>Sign Out</GlassButton>
-                    </Link>
-                    <br/><br/>
-                    or<br /><br/>
-                    <Link to='/' onClick={() => actions.deleteUser()}>
-                        <GlassButton>Delete User</GlassButton>
-                    </Link>
-                </GlassPaper>
-            </WelcomePageDiv>
+            <LeftColumn>
+                <h1>Welcome, {state.userName}!</h1>
+                <p>
+                    The database is set to store your account only for 30 days.
+                </p>
+                <h2>Let's try auth again!</h2>
+                <Link to='/' onClick={() => actions.requestSignOut()}>
+                    <GlassButton>Sign Out</GlassButton>
+                </Link>
+                <AuthenticationOr>or</AuthenticationOr>
+                <Link to='/' onClick={() => actions.deleteUser()}>
+                    <GlassButton>Delete User</GlassButton>
+                </Link>
+            </LeftColumn>
+            <BraveDeveloper />
         </AuthenticatedPage>
     );
 };
