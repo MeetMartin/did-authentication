@@ -18,7 +18,7 @@ const createUser = requestData => did =>
     createUserInFauna(requestData)(did)()
     .trigger
     (error =>
-        isEqual('BadRequest: instance not unique')(error + '')
+        isEqual('Creating Fauna Record: BadRequest: instance not unique')(error + '')
         ? ({statusCode: 200, body: JSON.stringify({userName: requestData.userName})})
         : logger.error(`User creation: ${error}`) && ({statusCode: 500, body: 'Internal Error'})
     )
