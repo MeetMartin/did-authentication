@@ -46,10 +46,6 @@ const GlobalStyle  = createGlobalStyle`
     }
 `;
 
-/**
- * Base Template component holding the basic web application
- * @returns {JSX.Element}
- */
 const App = () => {
     return (
         <StoreProvider>
