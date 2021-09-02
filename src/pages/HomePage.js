@@ -38,7 +38,15 @@ const HomePage = () => {
                     Decentralized Identifiers<br />
                     Are Here!
                 </h1>
-                <p>Decentralized Identifiers (DIDs) are user-controlled digital identities based on W3C standard using secure modern encryption.</p>
+                <p>
+                    Decentralized Identifiers (DIDs) are user-controlled digital identities based on W3C standard using secure modern encryption.
+                </p>
+                <ul>
+                    <li>Your identity is stored in your digital wallet, not controlled by any third party.</li>
+                    <li>Because you own your identity, you have controll over your privacy.</li>
+                    <li>The website stores only your DID ID, which cannot be used to impersonate you or gain access to your account.</li>
+                    <li>There is no password to steal, making your accounts that much more secure.</li>
+                </ul>
                 <h2>Try DID For Authentication</h2>
                 <Link to='/sign-in' title='Sign in using Decentralized Identifier'>
                     <GlassButton>Sign In</GlassButton>

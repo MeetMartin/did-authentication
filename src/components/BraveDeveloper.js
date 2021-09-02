@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import GlassPaper from './GlassPaper';
 
 const BraveDeveloperDiv = styled.div`
+    max-width: 650px;
     float: left;
     padding: 0 5px 5px 5px;
     @media only screen and (min-width: 768px) {
@@ -56,7 +57,7 @@ const BraveDeveloper = ({children}) =>
                 <li><a href='https://www.youtube.com/channel/UCkUWDKByhIbPVzu1H47cVow' target='_blank' title='YouTube React and JavaScript Functional Programming'>7urtle JavaScript YouTube Channel</a></li>
                 <li><a href='https://meet-martin.medium.com/' target='_blank' title='Medium Programming and Agile'>Meet Martin Medium articles</a></li>
             </ul>
-            <p>The background photo is from Glenorchy, New Zealand, from a chilling morning of July 2021.</p>
+            <p>The background photo is from Glenorchy, New Zealand, July 2021.</p>
             <p>See you with the next project :)</p>
             <p>- Martin</p>
         </GlassPaper>
