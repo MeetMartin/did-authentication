@@ -18,7 +18,7 @@ const createDID = payload =>
                     "Authorization": `Bearer ${payload.accessToken}`
                 }
             }
-        ).then(resolve).catch(error => reject(`Creating DID: ${error}`))
+        ).then(resolve).catch(error => reject(`Creating DID: ${error}.${error?.response?.data?.message && ` ${error.response.data.message}.`}`))
     );
 
 const readDID = payload =>
@@ -36,7 +36,7 @@ const readDID = payload =>
                     "Authorization": `Bearer ${payload.accessToken}`
                 }
             }
-        ).then(resolve).catch(error => reject(`Reading DID: ${error}`))
+        ).then(resolve).catch(error => reject(`Reading DID: ${error}.${error?.response?.data?.message && ` ${error.response.data.message}.`}`))
     );
 
 export {

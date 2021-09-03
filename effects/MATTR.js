@@ -14,7 +14,7 @@ const requestMATTRAccessToken = payload =>
                 "audience": "https://vii.mattr.global",
                 "grant_type": "client_credentials"
             }
-        ).then(resolve).catch(error => reject(`Requesting MATTR Acccess Token: ${error}`))
+        ).then(resolve).catch(error => reject(`Requesting MATTR Acccess Token: ${error}.${error?.response?.data?.message && ` ${error.response.data.message}.`}`))
     );
 
 export {

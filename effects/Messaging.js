@@ -21,9 +21,35 @@ const createJWS = payload =>
                     "Authorization": `Bearer ${payload.accessToken}`
                 }
             }
-        ).then(resolve).catch(error => reject(`Creating JWS: ${error}`))
+        ).then(resolve).catch(error => reject(`Creating JWS: ${error}.${error?.response?.data?.message && ` ${error.response.data.message}.`}`))
+    );
+
+const createJWE = payload =>
+    AsyncEffect
+    .of(reject => resolve =>
+        (isNothing(payload.tenant) && reject('createJWE payload.tenant is Nothing.')) ||
+        (isNothing(payload.accessToken) && reject('createJWE payload.accessToken is Nothing.')) ||
+        (isNothing(payload.didUrl) && reject('createJWE payload.didUrl is Nothing.')) ||
+        (isNothing(payload.recipientDids) && reject('createJWE payload.recipientDids is Nothing.')) ||
+        (isNothing(payload.request) && reject('createJWE payload.request is Nothing.')) ||
+        axios.post(
+            `https://${payload.tenant}/v1/messaging/encrypt`,
+            {
+                "senderDidUrl": payload.didUrl,
+                "recipientDidUrls": payload.recipientDids,
+                "payload": payload.request
+            },
+            {
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${payload.accessToken}`
+                }
+            }
+        ).then(resolve).catch(error => reject(`Creating JWE: ${error}.${error?.response?.data?.message && ` ${error.response.data.message}.`}`))
     );
 
 export {
-    createJWS
+    createJWS,
+    createJWE
 };
