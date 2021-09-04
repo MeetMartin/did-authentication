@@ -1,22 +1,7 @@
 import { isNothing, AsyncEffect } from '@7urtle/lambda';
 import axios from 'axios';
 
-/**
- * requestMATTRAccessToken returns AsyncEffect of authorization request to MATTR that returns access token.
- *
- * @HindleyMilner getMATTRAccessToken :: object -> AsyncEffect
- *
- * @pure
- * @param {object} payload
- * @return {AsyncEffect}
- *
- * @example
- * requestMATTRAccessToken({
- *  clientId: 'Ocx1X2xwIDChYnEGA4SxFcRODXCwC35F',
- *  clientSecret: 'knyO3oDhuvnEpluCbjaZtNbnv4z1agQGkLFUUtW6c7LaPA0gJEdCEBErKSDJ4-Et'
- * });
- */
- const requestMATTRAccessToken = payload =>
+const requestMATTRAccessToken = payload =>
     AsyncEffect
     .of(reject => resolve =>
         (isNothing(payload.clientId) && reject('requestMATTRAccessToken payload.clientId is Nothing.')) ||
@@ -29,9 +14,9 @@ import axios from 'axios';
                 "audience": "https://vii.mattr.global",
                 "grant_type": "client_credentials"
             }
-        ).then(resolve).catch(reject)
+        ).then(resolve).catch(error => reject(`Requesting MATTR Acccess Token: ${error}`))
     );
 
- export {
+export {
     requestMATTRAccessToken
- };
+};

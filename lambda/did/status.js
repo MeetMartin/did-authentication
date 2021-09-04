@@ -1,4 +1,4 @@
-import { isNothing, isArray, isUndefined, isLessThan, isEqual, startsWith, spy, Either, eitherToAsyncEffect, validateEithers, flatMap, compose, reduce } from '@7urtle/lambda';
+import { passThrough, deepInspect, isNothing, isArray, isUndefined, isLessThan, isEqual, startsWith, Either, eitherToAsyncEffect, validateEithers, map, flatMap, compose, reduce } from '@7urtle/lambda';
 
 import logger from '../../src/logger';
 import { getRecordByIndex, getClient, getFaunaSecretFromEnv } from '../../effects/Fauna';
@@ -27,7 +27,7 @@ const getSignInByChallengeId = data => client =>
 const errorsToError = error => isArray(error) ? reduce([])((a, c) => `${a} ${c}`)(error) : error;
 
 const errorToReasonMap = new Map([
-    ['NotFound: instance not found', 'You did not scan the QR code using the wallet.'],
+    ['Getting Fauna Record By Index: NotFound: instance not found', 'You did not scan the QR code using the wallet.'],
     ['Sign in age is more than 5 minutes.', 'Sign in was verified through wallet more than 5 minutes ago. Reload the page.']
 ]);
 
@@ -42,15 +42,6 @@ const errorToReason = error =>
         : errorToReasonMap.get(error + '')
     );
 
-const checkStatus = request =>
-    checkSignInStatus(request)
-    .trigger
-    (error =>
-        logger.error('Signins check processing: ' + errorsToError(error)) &&
-        ({statusCode: 200, body: JSON.stringify({ verified: false, reason: errorToReason(error) })})
-    )
-    (result => ({statusCode: 200, body: JSON.stringify({ verified: true, bearer: result })}));
-
 const getJWT = challengeResponse =>
     compose(
         flatMap(sign({did: challengeResponse.data.holder})),
@@ -60,13 +51,24 @@ const getJWT = challengeResponse =>
 
 const checkSignInStatus = request =>
     compose(
+        map(passThrough(request => logger.debug(`DID Authentication Status Request: ${deepInspect(request)}`))),
         flatMap(response => eitherToAsyncEffect(getJWT(response))),
         flatMap(getSignInByChallengeId(request)),
         eitherToAsyncEffect,
         flatMap(getClient),
         flatMap(getFaunaSecretFromEnv),
-        validateRequest
+        validateRequest,
+        map(passThrough(request => logger.debug(`DID Authentication Status Request: ${deepInspect(request)}`)))
     )(request);
+
+const checkStatus = request =>
+    checkSignInStatus(request)
+    .trigger
+    (error =>
+        logger.error('Signins check processing: ' + errorsToError(error)) &&
+        ({statusCode: 200, body: JSON.stringify({ verified: false, reason: errorToReason(error) })})
+    )
+    (result => ({statusCode: 200, body: JSON.stringify({ verified: true, bearer: result })}));
 
 export {
     checkStatus

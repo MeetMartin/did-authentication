@@ -33,7 +33,7 @@ const getDIDs = request =>
 
 const getPresentationTemplateAndVerifierDID = env =>
     compose(
-        map(responses => [responses[0].data.id, responses[1].data.did]),
+        map(responses => [responses[0].data.did, responses[1].data.id]),
         flatMap(token => getDIDs({tenant: env.tenant, accessToken: token})),
         map(response => response.data?.access_token),
         () => requestMATTRAccessToken({clientId: env.clientId, clientSecret: env.clientSecret})
@@ -50,10 +50,10 @@ main()
 .trigger
 (map(logger.error))
 (result =>
-    (isNothing(result[0]) && logger.error('No Template ID found in the server response')) ||
-    (isNothing(result[1]) && logger.error('No DID found in the server response')) ||
+    (isNothing(result[0]) && logger.error('No DID found in the server response.')) ||
+    (isNothing(result[1]) && logger.error('No Template ID found in the server response.')) ||
     logger.info(`
-TEMPLATE_ID=${result[0]}
-VERIFIER_DID=${result[1]}
+VERIFIER_DID=${result[0]}
+TEMPLATE_ID=${result[1]}
 Save these as environment variables.
 `));

@@ -1,120 +1,88 @@
-import { map, flatMap, isNothing, Either, either, mergeEithers, reduce, compose, AsyncEffect } from '@7urtle/lambda';
-import logger from '../../src/logger';
+import { passThrough, deepInspect, map, flatMap, compose, isNothing, Failure, Success, mergeEithers, eitherToAsyncEffect, mergeAsyncEffects } from '@7urtle/lambda';
 
+import logger from '../../src/logger';
+import { getValueFromEnv } from '../../effects/Environment';
 import { requestMATTRAccessToken } from '../../effects/MATTR';
 import { createPresentationRequest } from '../../effects/Presentation';
 import { readDID } from '../../effects/DID';
 import { createJWS } from '../../effects/Messaging';
 
-const getValueFromEnv = key => isNothing(process.env[key]) ? Either.Failure(`process.env.${key} is Nothing.`) : Either.Success(process.env[key]);
+const getId = id => isNothing(id) ? Failure('ID url path is Nothing.') : Success(id);
 
-const error500Response = {
-  statusCode: 500,
-  body: 'Internal Server Error'
-};
+const getVariables = id =>
+    mergeEithers(
+        getValueFromEnv('CLIENT_ID'),
+        getValueFromEnv('CLIENT_SECRET'),
+        getValueFromEnv('TENANT'),
+        getValueFromEnv('TEMPLATE_ID'),
+        getValueFromEnv('VERIFIER_DID'),
+        (map(url => `${url}/did/callback`)(getValueFromEnv('ngrok')))
+        .orElse(() => getValueFromEnv('PRESENTATION_CALLBACK_URL')),
+        getId(id)
+    );
 
-const getPresentationCallbackURL = () =>
-  (envEither =>
-    envEither.isFailure()
-    ? map(url => `${url}/did/callback`)(getValueFromEnv('ngrok'))
-    : envEither
-  )(getValueFromEnv('PRESENTATION_CALLBACK_URL'));
+const envListToObject = list => ({
+    clientId: list[0],
+    clientSecret: list[1],
+    tenant: list[2],
+    templateId: list[3],
+    did: list[4],
+    presentationCallbackURL: list[5],
+    requestId: list[6]
+});
 
-const getId = id => isNothing(id) ? Either.Failure('ID is Nothing.') : Either.Success(id);
+const getInputVariables =
+    compose(
+        map(envListToObject),
+        getVariables
+    );
 
-const getInputVariables = id =>
-  mergeEithers(
-    getValueFromEnv('CLIENT_ID'),
-    getValueFromEnv('CLIENT_SECRET'),
-    getValueFromEnv('TENANT'),
-    getValueFromEnv('TEMPLATE_ID'),
-    getValueFromEnv('VERIFIER_DID'),
-    getPresentationCallbackURL(), // uses process.env.PRESENTATION_CALLBACK_URL or process.env.ngrok,
-    getId(id) // passed from QR code url
-  );
-
-const valuesToPayload = values => ({
-    clientId: values[0],
-    clientSecret: values[1],
-    tenant: values[2],
-    templateID: values[3],
-    did: values[4],
-    presentationCallbackURL: values[5],
-    requestId: values[6]
-  });
-
-const getPayloadWithAccessToken = payload =>
-  map
-  (result =>
-    isNothing(result.data?.access_token)
-    ? Either.Failure('Access Token is Nothing.')
-    : Either.Success({...payload, accessToken: result.data.access_token})
-  )
-  (requestMATTRAccessToken(payload));
-
-const getPayload = fn => onResult => payloadEither =>
-  either
-  (() => AsyncEffect.of(_ => resolve => resolve(payloadEither)))
-  (payload => map(onResult(payload))(fn(payload)))
-  (payloadEither);
-
-const getPayloadWithPresentationRequest =
-  getPayload
-  (createPresentationRequest)
-  (payload => result =>
-    isNothing(result.data?.request)
-    ? Either.Failure('Presentation Request is Nothing.')
-    : Either.Success({...payload, request: result.data.request})
-  );
-
-const getPayloadWithDIDURL =
-  getPayload
-  (readDID)
-  (payload => result =>
-    isNothing(result.data?.didDocument?.authentication[0])
-    ? Either.Failure('Verifier DID URL is Nothing.')
-    : Either.Success({...payload, didUrl: result.data.didDocument.authentication[0]})
-  );
-
-const getPayloadWithJWS =
-  getPayload
-  (createJWS)
-  (payload => result =>
-    isNothing(result.data)
-    ? Either.Failure('JWS is Nothing.')
-    : Either.Success({...payload, jws: result.data})
-  );
+const getPresentationRequestAndDID = request =>
+    mergeAsyncEffects(
+        createPresentationRequest(request),
+        readDID(request)
+    );
 
 const getJWSURL = payload => `https://${payload.tenant}/?request=${payload.jws}`;
 
-const getAuthenticationEffect = compose(
-  map(map(map(getJWSURL))), // => Either(AsyncEffect(Either))
-  map(flatMap(getPayloadWithJWS)), // => Either(AsyncEffect(Either))
-  map(flatMap(getPayloadWithDIDURL)), // => Either(AsyncEffect(Either))
-  map(flatMap(getPayloadWithPresentationRequest)), // => Either(AsyncEffect(Either))
-  map(getPayloadWithAccessToken), // => Either(AsyncEffect(Either))
-  map(valuesToPayload), // => Either
-  getInputVariables // => Either
-);
+const getJWS = request =>
+    compose(
+        map(jws => getJWSURL({tenant: request.tenant, jws: jws})),
+        map(result => result.data),
+        flatMap(data => createJWS({...request, ...data})),
+        map(responses => ({request: responses[0].data?.request, didUrl: responses[1].data?.didDocument?.authentication[0]})),
+        () => getPresentationRequestAndDID(request)
+    )();
 
-const errorsToError = reduce([])((a, c) => `${a} ${c}`);
+const getJWSPresentationRequest = input =>
+    compose(
+        flatMap(token => getJWS({accessToken: token, ...input})),
+        map(response => response.data?.access_token),
+        () => requestMATTRAccessToken({clientId: input.clientId, clientSecret: input.clientSecret})
+    )();
+
+const getAuthenticationEffect =
+    compose(
+        map(passThrough(url => logger.debug(`DID Authentication Redirect URL: ${deepInspect(url)}`))),
+        flatMap(getJWSPresentationRequest),
+        eitherToAsyncEffect,
+        map(passThrough(input => logger.debug(`DID Authentication Input Variables: ${deepInspect(input)}`))),
+        getInputVariables,
+    );
 
 const triggerAuthentication = id =>
-  either
-  (errors => logger.error('Authentication input variables: ' + errorsToError(errors)) && error500Response)
-  (effect =>
-    effect.trigger
-    (error => logger.error(`Authentication presentation request: ${error.response.status} ${error.response.statusText} ${error.response.config.url} ${error.response.data?.details[0]?.msg ? error.response.data.details[0].msg : ''}`) && error500Response) 
-    (
-      either
-      (errors => logger.error('JWS URL: ' + errorsToError(errors)) && error500Response)
-      (result => ({
+    getAuthenticationEffect(id)
+    .trigger
+    (errors => map(error => logger.error(`DID Authentication: ${error}`))(errors) && ({
+        statusCode: 500,
+        body: 'Internal Server Error'
+    }))
+    (result => ({
         statusCode: 301,
-        location: result
-      }))
-    )
-  )
-  (getAuthenticationEffect(id));
+        headers: {
+            location: result
+        }
+    }));
 
 export {
     triggerAuthentication

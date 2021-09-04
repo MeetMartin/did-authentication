@@ -1,4 +1,4 @@
-import { eitherToAsyncEffect, flatMap, compose } from '@7urtle/lambda';
+import { passThrough, deepInspect, eitherToAsyncEffect, map, flatMap, compose } from '@7urtle/lambda';
 
 import logger from '../../src/logger';
 import { deleteRecordByIndex, getClient, getFaunaSecretFromEnv } from '../../effects/Fauna';
@@ -12,6 +12,7 @@ const deleteUserByDID = data => client =>
 
 const deleteUserFromFauna = did =>
     compose(
+        map(passThrough(response => logger.debug(`Deleted User In Fauna: ${deepInspect(response.data)}.`))),
         flatMap(deleteUserByDID(did)),
         eitherToAsyncEffect,
         flatMap(getClient),

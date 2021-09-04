@@ -1,4 +1,4 @@
-import { eitherToAsyncEffect, flatMap, compose, isEqual } from '@7urtle/lambda';
+import { passThrough, deepInspect, eitherToAsyncEffect, map, flatMap, compose, isEqual } from '@7urtle/lambda';
 
 import logger from '../../src/logger';
 import { getRecordByIndex, getClient, getFaunaSecretFromEnv } from '../../effects/Fauna';
@@ -12,6 +12,7 @@ const getUserByDID = data => client =>
 
 const readUserFromFauna = did =>
     compose(
+        map(passThrough(response => logger.debug(`Read User From Fauna: ${deepInspect(response.data)}.`))),
         flatMap(getUserByDID(did)),
         eitherToAsyncEffect,
         flatMap(getClient),
@@ -22,7 +23,7 @@ const readUser = did =>
     readUserFromFauna(did)()
     .trigger
     (error =>
-        isEqual('NotFound: instance not found')(error + '')
+        isEqual('Getting Fauna Record By Index: NotFound: instance not found')(error + '')
         ? ({statusCode: 200, body: JSON.stringify({reason: 'You are not a member yet. Please sign up first.'})})
         : logger.error(`User reading: ${error}`) && ({statusCode: 500, body: 'Internal Error'}))
     (response => ({statusCode: 200, body: JSON.stringify({userName: response.data.userName})}));

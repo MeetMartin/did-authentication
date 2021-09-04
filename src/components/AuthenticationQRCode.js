@@ -12,6 +12,7 @@ const AuthenticationQRCode = ({ QRInput }) => {
 
     const [isMobile, setMobile] = useState(false);
     const [didcomm, setDidcomm] = useState(`didcomm://${window.location.origin}/.netlify/functions/did/authentication/${QRInput}`);
+    const [isMobileButtonClicked, setIsMobileButtonClicked] = useState(false);
 
     const mobileDevices = ['ipad', 'iphone', 'ipod', 'android'];
     const includesAnyOf = where => reduce(false)((a, c) => includes(c)(where) ? true : a);
@@ -34,9 +35,13 @@ const AuthenticationQRCode = ({ QRInput }) => {
                 </>
             ||
                 <p>
-                    <a href={`global.mattr.wallet://accept/${window.btoa(unescape(encodeURIComponent(didcomm)))}`}>
-                        <GlassButton>Authenticate in MATTR Wallet on Mobile</GlassButton>
-                    </a>
+                    {!isMobileButtonClicked &&
+                        <a href={`global.mattr.wallet://accept/${window.btoa(unescape(encodeURIComponent(didcomm)))}`}
+                           onClick={() => setIsMobileButtonClicked(true)}
+                        >
+                            <GlassButton>Authenticate in MATTR Wallet on Mobile</GlassButton>
+                        </a>
+                    }
                 </p>
             }
         </>
