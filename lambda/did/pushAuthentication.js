@@ -10,8 +10,8 @@ import { createJWE, sendMessage } from '../../effects/Messaging';
 
 const validateRequest =
     validateEithers(
-        request => isNothing(request?.challengeId) ? Failure(`Request challengeId is Nothing.`) : Success(request),
-        request => isNothing(request?.userName) ? Failure(`Request userName is Nothing.`) : Success(request)
+        request => isNothing(request?.challengeId) ? Failure('Request challengeId is Nothing.') : Success(request),
+        request => isNothing(request?.userName) ? Failure('Request userName is Nothing.') : Success(request)
     );
 
 const getDIDByUserName = data => client =>
@@ -78,7 +78,7 @@ const createMATTRRequest = request =>
 
 const getAuthenticationEffect = request =>
     compose(
-        map(passThrough(() => logger.debug(`DID Push Authentication Success.`))),
+        map(passThrough(() => logger.debug('DID Push Authentication Success.'))),
         flatMap(did => createMATTRRequest({recipientDid: did, requestId: request.challengeId})),
         map(response => response.data.did),
         flatMap(getDIDByUserName(request.userName)),
