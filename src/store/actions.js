@@ -10,5 +10,6 @@ export const useActions = (state, dispatch) =>
         deleteUser: myDispatch(types.DELETE_USER),
         requestSignOut: myDispatch(types.REQUEST_SIGN_OUT),
         requestSignIn: myDispatch(types.REQUEST_SIGN_IN),
+        requestSignInByName: myDispatch(types.REQUEST_SIGN_IN_BY_NAME),
         receiveSignUpError: myDispatch(types.RECEIVE_SIGN_UP_ERROR)
     }))(type => payload => dispatch({ type: type, payload: payload }));

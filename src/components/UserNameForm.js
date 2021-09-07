@@ -12,9 +12,9 @@ const FormTag = styled.form`
     }
 `;
 
-const SignUpForm = () => {
+const UserNameForm = ({ buttonText }) => {
     const [ userName, setUserName ] = useState('');
-    const { actions } = useContext(StoreContext);
+    const { state, actions } = useContext(StoreContext);
 
     const hookOnChange = fn => event => fn(event.target.value);
     const hookOnSubmit = event =>
@@ -25,13 +25,12 @@ const SignUpForm = () => {
 
     return(
         <>
-            <h2>Account Info</h2>
             <FormTag onSubmit={hookOnSubmit}>
-                <GlassTextField placeholder='User name' value={userName} onChange={hookOnChange(setUserName)} />
-                <GlassButton disabled={validateUserName(userName).isFailure()} onClick={hookOnSubmit}>Sign Up</GlassButton>
+                <GlassTextField placeholder='User name' value={userName || state.userName} onChange={hookOnChange(setUserName)} />
+                <GlassButton disabled={validateUserName(userName).isFailure()} onClick={hookOnSubmit}>{buttonText || 'Sign Up'}</GlassButton>
             </FormTag>
         </>
     );
 };
 
-export default SignUpForm;
+export default UserNameForm;

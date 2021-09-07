@@ -7,9 +7,10 @@ import { useHistory } from 'react-router-dom';
 
 import Page from './Page';
 import { StoreContext } from '../store/StoreContext';
-import QRInfo from '../components/QRInfo';
+import UserNameForm from '../components/UserNameForm';
+import MobileAppDownload from '../components/MobileAppDownload';
+import AuthenticationQRCode from '../components/AuthenticationQRCode';
 import LeftColumn from '../components/LeftColumn';
-import GlassButton from '../components/GlassButton';
 
 const ErrorParagraph = styled.p`
     color: red;
@@ -19,8 +20,30 @@ const SignInPage = () => {
     const { state, actions } = useContext(StoreContext);
 
     const [challengeId, setChallengeId] = useState(shortid.generate());
+    const [timedOutStatusCheck, setTimedOutStatusCheck] = useState(false);
 
     const history = useHistory();
+
+    useEffect(() => {
+        actions.receiveSignUpError(); // clear errors when page is opened
+
+        const statusCheckInterval = setInterval(() => {
+            !timedOutStatusCheck && actions.requestSignIn(challengeId);
+        }, 5000);
+
+        const statusCheckTimeout = setTimeout(() => {
+            setTimedOutStatusCheck(true);
+        }, 300000);
+
+        return () => {
+            clearInterval(statusCheckInterval);
+            clearTimeout(statusCheckTimeout);
+        };
+    }, []);
+
+    useEffect(() => {
+        state.userName && !state.authenticated && actions.requestSignInByName({challengeId: challengeId, userName: state.userName});
+    }, [state.userName]);
     
     useEffect(() => {
         state.requestedSignIn && state.bearer && actions.readUser();
@@ -29,10 +52,6 @@ const SignInPage = () => {
     useEffect(() => {
         state.authenticated && history.push('/welcome');
     }, [state.authenticated]);
-
-    useEffect(() => {
-        actions.receiveSignUpError(); // clear errors when page is opened
-    }, []);
 
     return (
         <Page>
@@ -54,13 +73,20 @@ const SignInPage = () => {
                     Sign In<br />
                     With MATTR Wallet
                 </h1>
-                        <QRInfo QRInput={challengeId} />
-                        <p>Once you are verified in the MATTR Wallet:</p>
-                        <GlassButton onClick={() => actions.requestSignIn(challengeId)}>Verified in Wallet</GlassButton>
-                        <ErrorParagraph>{state.signUpError}</ErrorParagraph>
-                <p>
-                    Not a member yet? <Link to='/sign-up'>Sign up</Link>.
-                </p>
+                <ErrorParagraph>{state.signUpError}</ErrorParagraph>
+                <MobileAppDownload />
+                {state.authenticating && <p>Signing in... Please check your MATTR Wallet on your mobile device.</p>}
+                {!state.authenticating && <>
+                    <h2>by user name</h2>
+                    <UserNameForm buttonText='Sign In' />
+                    <h2>or by a QR code</h2>
+                    <AuthenticationQRCode QRInput={challengeId} />
+                    <p>
+                        Not a member yet? <Link to='/sign-up'>Sign up</Link>.
+                    </p>
+                </>}
+                
+                
             </LeftColumn>
         </Page>
     );
