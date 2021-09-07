@@ -34,3 +34,12 @@ $ npm run dev
 ```
 
 The project is open source, so feel free to reach out to me to contribute.
+
+Creating `collections` and `indexes` in **fauna**
+1) Collections
+   1) users
+   2) signins
+2) Indexes
+   1) collection `signins` -> signins_by_challengeid -> term(challengeid), unique
+   2) collection `users` -> did_by_username ->term(userName), unique
+   3) collection `users` -> users_by_did -> term(did), unique
