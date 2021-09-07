@@ -6,15 +6,15 @@ import types from '../types';
 
 export const getDIDStatusByChallengeId = dispatch => action =>
     getStatus(action.payload).trigger
-    (() => logger.debug('DID Status Check: Internal error.'))
+    (() => dispatch({type: types.RECEIVE_SIGN_UP_ERROR, payload: 'Verification Check: Internal error.'}))
     (maybe
-        (() => logger.debug('DID Status Check: Unknown data error.'))
+        (() => dispatch({type: types.RECEIVE_SIGN_UP_ERROR, payload: 'Verification Check: Unknown data error.'}))
         (data =>
             isEqual(true)(data.verified)
             ? dispatch({type: types.RECEIVE_WALLET_VERIFICATION, payload: data.bearer})
             : isJust(data.reason)
                 ? logger.debug(`DID Status Check: ${data.reason}`)
-                : logger.debug('DID Status Check: Unknown error.')
+                : dispatch({type: types.RECEIVE_SIGN_UP_ERROR, payload: 'Verification Check: Unknown error.'})
         )
     );
 
