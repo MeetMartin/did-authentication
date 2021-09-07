@@ -1,4 +1,4 @@
-import { isNothing, AsyncEffect } from '@7urtle/lambda';
+import { isNothing, AsyncEffect, deepInspect } from '@7urtle/lambda';
 import axios from 'axios';
 
 const requestMATTRAccessToken = payload =>
@@ -14,9 +14,15 @@ const requestMATTRAccessToken = payload =>
                 "audience": "https://vii.mattr.global",
                 "grant_type": "client_credentials"
             }
-        ).then(resolve).catch(error => reject(`Requesting MATTR Acccess Token: ${error}.${error?.response?.data?.message && ` ${error.response.data.message}.`}`))
+        ).then(resolve).catch(error => reject(`Requesting MATTR Acccess Token: ${processMATTRError(error)}`))
     );
 
+const processMATTRError = error =>
+    `${error}.
+    ${error?.response?.data?.message ? ` ${error.response.data.message}.` : ''}
+    ${error?.response?.data?.details ? ` ${deepInspect(error.response.data.details)}.` : ''}`;
+
 export {
-    requestMATTRAccessToken
+    requestMATTRAccessToken,
+    processMATTRError
 };

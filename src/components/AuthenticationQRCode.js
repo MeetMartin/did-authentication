@@ -16,7 +16,7 @@ const AuthenticationQRCode = ({ QRInput }) => {
     const [didcomm, setDidcomm] = useState(`didcomm://${window.location.origin}/.netlify/functions/did/authentication/${QRInput}`);
 
     useEffect(() => isDevelopment && isNothing(state.ngrokURL) && actions.requestNgrokURL(), []);
-    useEffect(() => { isJust(state.ngrokURL) && setDidcomm(`didcomm://${state.ngrokURL}/did/authentication/${QRInput}`) }, [state.ngrokURL])
+    useEffect(() => { isJust(state.ngrokURL) && setDidcomm(`didcomm://${state.ngrokURL}/did/authentication/${QRInput}`) }, [state.ngrokURL]);
 
     return (
         <>
