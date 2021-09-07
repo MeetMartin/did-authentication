@@ -62,7 +62,7 @@ const checkStatus = request =>
     checkSignInStatus(request)
     .trigger
     (errors => map(error => logger.error(`Signins status: ${error}`))(errors) &&
-        ({statusCode: 200, body: JSON.stringify({ verified: false, reason: errorToReason(error) })})
+        ({statusCode: 200, body: JSON.stringify({ verified: false, reason: errorToReason(errors) })})
     )
     (result => ({statusCode: 200, body: JSON.stringify({ verified: true, bearer: result })}));
 
