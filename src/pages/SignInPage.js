@@ -11,6 +11,7 @@ import UserNameForm from '../components/UserNameForm';
 import MobileAppDownload from '../components/MobileAppDownload';
 import AuthenticationQRCode from '../components/AuthenticationQRCode';
 import LeftColumn from '../components/LeftColumn';
+import useDeviceType from '../hooks/useDeviceType';
 
 const ErrorParagraph = styled.p`
     color: red;
@@ -23,6 +24,8 @@ const SignInPage = () => {
     const [timedOutStatusCheck, setTimedOutStatusCheck] = useState(false);
 
     const history = useHistory();
+
+    const isMobile = useDeviceType();
 
     useEffect(() => {
         actions.receiveSignUpError(); // clear errors when page is opened
@@ -79,7 +82,7 @@ const SignInPage = () => {
                 {!state.authenticating && <>
                     <h2>by user name</h2>
                     <UserNameForm buttonText='Sign In' />
-                    <h2>or by a QR code</h2>
+                    <h2>{isMobile ? 'or' : 'or by a QR code'}</h2>
                     <AuthenticationQRCode QRInput={challengeId} />
                     <p>
                         Not a member yet? <Link to='/sign-up'>Sign up</Link>.
