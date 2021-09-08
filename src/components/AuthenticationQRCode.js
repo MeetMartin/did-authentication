@@ -1,29 +1,22 @@
 import React, { useEffect, useContext, useState } from 'react';
 import QRCode from 'qrcode.react';
-import { isEqual, isNothing, isJust, includes, reduce, lowerCaseOf } from '@7urtle/lambda';
+import { isEqual, isNothing, isJust } from '@7urtle/lambda';
 
 import { StoreContext } from '../store/StoreContext';
+import useDeviceType from '../hooks/useDeviceType';
 import GlassButton from './GlassButton';
 
 const AuthenticationQRCode = ({ QRInput }) => {
     const { state, actions } = useContext(StoreContext);
 
     const isDevelopment = isEqual('development')(process.env.NODE_ENV);
-
-    const [isMobile, setMobile] = useState(false);
-    const [didcomm, setDidcomm] = useState(`didcomm://${window.location.origin}/.netlify/functions/did/authentication/${QRInput}`);
+    
+    const isMobile = useDeviceType();
     const [isMobileButtonClicked, setIsMobileButtonClicked] = useState(false);
-
-    const mobileDevices = ['ipad', 'iphone', 'ipod', 'android'];
-    const includesAnyOf = where => reduce(false)((a, c) => includes(c)(where) ? true : a);
-    const isDeviceMobile = () =>
-        includesAnyOf(lowerCaseOf(navigator.userAgent))(mobileDevices) ||
-        includesAnyOf(lowerCaseOf(navigator.platform))(mobileDevices) ||
-        (includes("Mac")(navigator.userAgent) && "ontouchend" in document);
+    const [didcomm, setDidcomm] = useState(`didcomm://${window.location.origin}/.netlify/functions/did/authentication/${QRInput}`);
 
     useEffect(() => isDevelopment && isNothing(state.ngrokURL) && actions.requestNgrokURL(), []);
-    useEffect(() => { isJust(state.ngrokURL) && setDidcomm(`didcomm://${state.ngrokURL}/did/authentication/${QRInput}`) }, [state.ngrokURL])
-    useEffect(() => setMobile(isDeviceMobile()), []);
+    useEffect(() => { isJust(state.ngrokURL) && setDidcomm(`didcomm://${state.ngrokURL}/did/authentication/${QRInput}`) }, [state.ngrokURL]);
 
     return (
         <>

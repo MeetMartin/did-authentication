@@ -11,10 +11,9 @@ const validateRequest = request =>
 
 const validateSignIn =
     validateEithers(
-        request => isNothing(request.data.holder) || isNothing(request.data.verified) || isNothing(request.ts) ? Either.Failure('Sign In response is not complete.') : Either.Success(request),
-        request => !startsWith('did:')(request.data.holder) ? Either.Failure(`Sign in holder is not DID.`) : Either.Success(request),
-        request => isEqual('true')(request.data.verified) ? Either.Failure(`Sign in verified is not true.`) : Either.Success(request),
-        request => isLessThan((Date.now() * 1000 - request.ts) / 60000000)(5) ? Either.Failure(`Sign in age is more than 5 minutes.`) : Either.Success(request)
+        request => isNothing(request?.data?.holder) || !startsWith('did:')(request.data.holder) ? Either.Failure(`Sign in holder is Nothing or not DID.`) : Either.Success(request),
+        request => isNothing(request?.data?.verified) || isEqual('true')(request.data.verified) ? Either.Failure(`Sign in verified is Nothing or not true.`) : Either.Success(request),
+        request => isNothing(request?.ts) || isLessThan((Date.now() * 1000 - request.ts) / 60000000)(5) ? Either.Failure(`Sign in age is Nothing or more than 5 minutes.`) : Either.Success(request)
     );
 
 const getSignInByChallengeId = data => client =>
@@ -24,11 +23,9 @@ const getSignInByChallengeId = data => client =>
         index: 'signins_by_challengeid'
     });
 
-const errorsToError = error => isArray(error) ? reduce([])((a, c) => `${a} ${c}`)(error) : error;
-
 const errorToReasonMap = new Map([
     ['Getting Fauna Record By Index: NotFound: instance not found', 'You did not scan the QR code using the wallet.'],
-    ['Sign in age is more than 5 minutes.', 'Sign in was verified through wallet more than 5 minutes ago. Reload the page.']
+    ['Sign in age is Nothing or more than 5 minutes.', 'Sign in was verified through wallet more than 5 minutes ago. Reload the page.']
 ]);
 
 const errorToReason = error =>
@@ -51,7 +48,7 @@ const getJWT = challengeResponse =>
 
 const checkSignInStatus = request =>
     compose(
-        map(passThrough(request => logger.debug(`DID Authentication Status Request: ${deepInspect(request)}`))),
+        map(passThrough(response => logger.debug(`DID Authentication Status Response: ${deepInspect(response)}`))),
         flatMap(response => eitherToAsyncEffect(getJWT(response))),
         flatMap(getSignInByChallengeId(request)),
         eitherToAsyncEffect,
@@ -64,9 +61,8 @@ const checkSignInStatus = request =>
 const checkStatus = request =>
     checkSignInStatus(request)
     .trigger
-    (error =>
-        logger.error('Signins check processing: ' + errorsToError(error)) &&
-        ({statusCode: 200, body: JSON.stringify({ verified: false, reason: errorToReason(error) })})
+    (errors => map(error => logger.error(`Signins status: ${error}`))(errors) &&
+        ({statusCode: 200, body: JSON.stringify({ verified: false, reason: errorToReason(errors) })})
     )
     (result => ({statusCode: 200, body: JSON.stringify({ verified: true, bearer: result })}));
 

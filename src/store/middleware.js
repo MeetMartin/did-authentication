@@ -1,7 +1,7 @@
 import types from './types';
 import logger from '../logger';
 import { getNgrokUrl } from './hooks/NgrokHook';
-import { getDIDStatusByChallengeId } from './hooks/DIDStatusHook';
+import { getDIDStatusByChallengeId, getDIDSignInByName } from './hooks/DIDHook';
 import { createUser, readUser, deleteUser } from './hooks/UserHook';
 
 const applyMiddleware = state => dispatch => action => {
@@ -21,6 +21,10 @@ const applyMiddleware = state => dispatch => action => {
         case types.REQUEST_SIGN_IN:
             logger.debug('[applyMiddleware]', types.REQUEST_SIGN_IN);
             getDIDStatusByChallengeId(dispatch)(action);
+            break;
+        case types.REQUEST_SIGN_IN_BY_NAME:
+            logger.debug('[applyMiddleware]', types.REQUEST_SIGN_IN_BY_NAME);
+            getDIDSignInByName(dispatch)(action);
             break;
         case types.READ_USER:
             logger.debug('[applyMiddleware]', types.READ_USER);

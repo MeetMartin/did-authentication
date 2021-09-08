@@ -12,7 +12,8 @@ const initialState = stateFromLocalStorage
         bearer: '',
         requestedSignUp: false,
         requestedSignIn: false,
-        authenticated: false
+        authenticated: false,
+        authenticating: false,
     };
 
 const reducer = (state = initialState, action) => {
@@ -43,12 +44,15 @@ const reducer = (state = initialState, action) => {
         case(types.RECEIVE_SIGN_UP_ERROR):
             return ({
                 ...state,
-                signUpError: action.payload
+                signUpError: action.payload,
+                authenticating: false,
+                userName: ''
             });
         case(types.RECEIVE_WALLET_VERIFICATION):
             return ({
                 ...state,
-                bearer: action.payload
+                bearer: action.payload,
+                authenticating: false
             });
         case(types.CREATE_USER):
             return ({
@@ -72,6 +76,11 @@ const reducer = (state = initialState, action) => {
                 authenticated: false,
                 userName: '',
                 bearer: ''
+            });
+        case(types.REQUEST_SIGN_IN_BY_NAME):
+            return ({
+                ...state,
+                authenticating: true
             });
         default:
             return state;
