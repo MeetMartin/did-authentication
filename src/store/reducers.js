@@ -45,7 +45,8 @@ const reducer = (state = initialState, action) => {
             return ({
                 ...state,
                 signUpError: action.payload,
-                authenticating: false
+                authenticating: false,
+                userName: ''
             });
         case(types.RECEIVE_WALLET_VERIFICATION):
             return ({
