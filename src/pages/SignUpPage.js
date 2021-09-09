@@ -7,10 +7,10 @@ import { useHistory } from 'react-router-dom';
 
 import Page from './Page';
 import { StoreContext } from '../store/StoreContext';
-import SignUpForm from '../components/SignUpForm';
-import QRInfo from '../components/QRInfo';
+import UserNameForm from '../components/UserNameForm';
+import MobileAppDownload from '../components/MobileAppDownload';
+import AuthenticationQRCode from '../components/AuthenticationQRCode';
 import LeftColumn from '../components/LeftColumn';
-import GlassButton from '../components/GlassButton';
 
 const ErrorParagraph = styled.p`
     color: red;
@@ -20,8 +20,26 @@ const SignUpPage = () => {
     const { state, actions } = useContext(StoreContext);
 
     const [challengeId, setChallengeId] = useState(shortid.generate());
+    const [timedOutStatusCheck, setTimedOutStatusCheck] = useState(false);
 
     const history = useHistory();
+
+    useEffect(() => {
+        actions.receiveSignUpError(); // clear errors when page is opened
+
+        const statusCheckInterval = setInterval(() => {
+            !timedOutStatusCheck && actions.requestSignUp(challengeId);
+        }, 5000);
+
+        const statusCheckTimeout = setTimeout(() => {
+            setTimedOutStatusCheck(true);
+        }, 300000);
+        
+        return () => {
+            clearInterval(statusCheckInterval);
+            clearTimeout(statusCheckTimeout);
+        };
+    }, []);
     
     useEffect(() => {
         state.requestedSignUp && state.bearer && actions.createUser();
@@ -30,10 +48,6 @@ const SignUpPage = () => {
     useEffect(() => {
         state.authenticated && history.push('/welcome');
     }, [state.authenticated]);
-
-    useEffect(() => {
-        actions.receiveSignUpError(); // clear errors when page is opened
-    }, []);
 
     return (
         <Page>
@@ -54,9 +68,14 @@ const SignUpPage = () => {
                 <h1>
                     Sign Up
                 </h1>
+                <ErrorParagraph>{state.signUpError}</ErrorParagraph>
+                <MobileAppDownload />
                 {
                     !state.userName
-                    ? <SignUpForm />
+                    ?   <>
+                            <h2>Account Info</h2>
+                            <UserNameForm />
+                        </>
                     :
                     <>
                         <h2>
@@ -64,10 +83,7 @@ const SignUpPage = () => {
                             Claim Your Account<br />
                             With MATTR Wallet
                         </h2>
-                        <QRInfo QRInput={challengeId} />
-                        <p>Once you are verified in the MATTR Wallet:</p>
-                        <GlassButton onClick={() => actions.requestSignUp(challengeId)}>Verified in Wallet</GlassButton>
-                        <ErrorParagraph>{state.signUpError}</ErrorParagraph>
+                        <AuthenticationQRCode QRInput={challengeId} />
                     </>
                 }
                 <p>

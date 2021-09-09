@@ -1,6 +1,8 @@
 import { isNothing, AsyncEffect } from '@7urtle/lambda';
 import axios from 'axios';
 
+import { processMATTRError } from './MATTR';
+
 const createDID = payload =>
     AsyncEffect
     .of(reject => resolve =>
@@ -18,7 +20,7 @@ const createDID = payload =>
                     "Authorization": `Bearer ${payload.accessToken}`
                 }
             }
-        ).then(resolve).catch(error => reject(`Creating DID: ${error}`))
+        ).then(resolve).catch(error => reject(`Creating DID: ${processMATTRError(error)}`))
     );
 
 const readDID = payload =>
@@ -36,7 +38,7 @@ const readDID = payload =>
                     "Authorization": `Bearer ${payload.accessToken}`
                 }
             }
-        ).then(resolve).catch(error => reject(`Reading DID: ${error}`))
+        ).then(resolve).catch(error => reject(`Reading DID: ${processMATTRError(error)}`))
     );
 
 export {

@@ -5,15 +5,18 @@ import types from '../types';
 export const createUser = dispatch => action =>
     postToUser(action.payload.bearer)({userName: action.payload.userName})
     .trigger
-    (error => dispatch({type: types.RECEIVE_SIGN_UP_ERROR, payload: 'Internal error.'}))
+    (error => error?.response?.data?.reason
+        ? dispatch({type: types.RECEIVE_SIGN_UP_ERROR, payload: error.response.data.reason})
+        : dispatch({type: types.RECEIVE_SIGN_UP_ERROR, payload: 'Internal error.'})
+    )
     (maybe
         (() => dispatch({type: types.RECEIVE_SIGN_UP_ERROR, payload: 'Unknown data error.'}))
         (payload => dispatch({type: types.RECEIVE_AUTHENTICATION, payload: payload}))
     );
 
 export const readUser = dispatch => action =>
-    getToUser(action.payload.bearer
-        ).trigger
+    getToUser(action.payload.bearer)
+    .trigger
     (error => dispatch({type: types.RECEIVE_SIGN_UP_ERROR, payload: 'Internal error.'}))
     (maybe
         (() => dispatch({type: types.RECEIVE_SIGN_UP_ERROR, payload: 'Unknown data error.'}))

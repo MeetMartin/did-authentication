@@ -1,3 +1,14 @@
+/*
+Brave developer,
+
+Please don't use this solution to manage your JWT in a real production environment.
+
+This approach was used to simplify the repository setup for people interested in
+distributed identifier authentication. However, the authorization approach using JWT
+is intentionally simplified.
+
+- Martin
+*/
 import { Either } from '@7urtle/lambda';
 import jwt from 'jsonwebtoken';
 

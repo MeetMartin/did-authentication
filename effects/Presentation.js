@@ -2,6 +2,8 @@ import { isNothing, AsyncEffect } from '@7urtle/lambda';
 import axios from 'axios';
 import shortid from 'shortid';
 
+import { processMATTRError } from './MATTR';
+
 const createPresentationTemplate = payload =>
     AsyncEffect
     .of(reject => resolve =>
@@ -25,7 +27,7 @@ const createPresentationTemplate = payload =>
                     "Authorization": `Bearer ${payload.accessToken}`
                 }
             }
-        ).then(resolve).catch(error => reject(`Creating Presentation Template: ${error}`))
+        ).then(resolve).catch(error => reject(`Creating Presentation Template: ${processMATTRError(error)}`))
     );
 
 const createPresentationRequest = payload =>
@@ -53,7 +55,7 @@ const createPresentationRequest = payload =>
                     "Authorization": `Bearer ${payload.accessToken}`
                 }
             }
-        ).then(resolve).catch(error => reject(`Creating Presentation Request: ${error}`))
+        ).then(resolve).catch(error => reject(`Creating Presentation Request: ${processMATTRError(error)}`))
     );
 
 export {
