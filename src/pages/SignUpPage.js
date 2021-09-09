@@ -68,6 +68,7 @@ const SignUpPage = () => {
                 <h1>
                     Sign Up
                 </h1>
+                {timedOutStatusCheck && <ErrorParagraph>Sign up has timed out. Please reload the page if you still want to sign up.</ErrorParagraph>}
                 <ErrorParagraph>{state.signUpError}</ErrorParagraph>
                 <MobileAppDownload />
                 {
