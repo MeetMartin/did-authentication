@@ -76,6 +76,7 @@ const SignInPage = () => {
                     Sign In<br />
                     With MATTR Wallet
                 </h1>
+                {timedOutStatusCheck && <ErrorParagraph>Sign in has timed out. Please reload the page if you still want to sign in.</ErrorParagraph>}
                 <ErrorParagraph>{state.signUpError}</ErrorParagraph>
                 <MobileAppDownload />
                 {state.authenticating && <p>Signing in... Please check your MATTR Wallet on your mobile device.</p>}
