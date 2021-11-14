@@ -1,11 +1,8 @@
-import { passThrough, deepInspect, map, flatMap, compose, isNothing, Failure, Success, mergeEithers, eitherToAsyncEffect, mergeAsyncEffects } from '@7urtle/lambda';
+import { passThrough, deepInspect, map, flatMap, compose, isNothing, Failure, Success, mergeEithers, eitherToAsyncEffect } from '@7urtle/lambda';
+import { authentication } from 'didauth';
 
 import logger from '../../src/logger';
 import { getValueFromEnv } from '../../effects/Environment';
-import { requestMATTRAccessToken } from '../../effects/MATTR';
-import { createPresentationRequest } from '../../effects/Presentation';
-import { readDID } from '../../effects/DID';
-import { createJWS } from '../../effects/Messaging';
 
 const getId = id => isNothing(id) ? Failure('ID url path is Nothing.') : Success(id);
 
@@ -17,7 +14,7 @@ const getVariables = id =>
         getValueFromEnv('TEMPLATE_ID'),
         getValueFromEnv('VERIFIER_DID'),
         (map(url => `${url}/did/callback`)(getValueFromEnv('ngrok')))
-        .orElse(() => getValueFromEnv('PRESENTATION_CALLBACK_URL')),
+        .orElse(() => getValueFromEnv('CALLBACK_URL')),
         getId(id)
     );
 
@@ -27,7 +24,7 @@ const envListToObject = list => ({
     tenant: list[2],
     templateId: list[3],
     did: list[4],
-    presentationCallbackURL: list[5],
+    callbackURL: list[5],
     requestId: list[6]
 });
 
@@ -37,34 +34,10 @@ const getInputVariables =
         getVariables
     );
 
-const getPresentationRequestAndDID = request =>
-    mergeAsyncEffects(
-        createPresentationRequest(request),
-        readDID(request)
-    );
-
-const getJWSURL = payload => `https://${payload.tenant}/?request=${payload.jws}`;
-
-const getJWS = request =>
-    compose(
-        map(jws => getJWSURL({tenant: request.tenant, jws: jws})),
-        map(result => result.data),
-        flatMap(data => createJWS({...request, ...data})),
-        map(responses => ({request: responses[0].data?.request, didUrl: responses[1].data?.didDocument?.authentication[0]})),
-        () => getPresentationRequestAndDID(request)
-    )();
-
-const getJWSPresentationRequest = input =>
-    compose(
-        flatMap(token => getJWS({accessToken: token, ...input})),
-        map(response => response.data?.access_token),
-        () => requestMATTRAccessToken({clientId: input.clientId, clientSecret: input.clientSecret})
-    )();
-
 const getAuthenticationEffect =
     compose(
         map(passThrough(url => logger.debug(`DID Authentication Redirect URL: ${deepInspect(url)}`))),
-        flatMap(getJWSPresentationRequest),
+        flatMap(authentication),
         eitherToAsyncEffect,
         map(passThrough(input => logger.debug(`DID Authentication Input Variables: ${deepInspect(input)}`))),
         getInputVariables,

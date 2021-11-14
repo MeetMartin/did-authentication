@@ -1,12 +1,9 @@
 import { passThrough, deepInspect, isEqual, map, flatMap, compose, isNothing, Failure, Success, validateEithers, mergeEithers, eitherToAsyncEffect, mergeAsyncEffects } from '@7urtle/lambda';
+import { pushAuthentication } from 'didauth';
 
 import logger from '../../src/logger';
 import { getRecordByIndex, getClient, getFaunaSecretFromEnv } from '../../effects/Fauna';
 import { getValueFromEnv } from '../../effects/Environment';
-import { requestMATTRAccessToken } from '../../effects/MATTR';
-import { readDID } from '../../effects/DID';
-import { createPresentationRequest } from '../../effects/Presentation';
-import { createJWE, sendMessage } from '../../effects/Messaging';
 
 const validateRequest =
     validateEithers(
@@ -29,7 +26,7 @@ const getVariables = () =>
         getValueFromEnv('TEMPLATE_ID'),
         getValueFromEnv('VERIFIER_DID'),
         (map(url => `${url}/did/callback`)(getValueFromEnv('ngrok')))
-        .orElse(() => getValueFromEnv('PRESENTATION_CALLBACK_URL'))
+        .orElse(() => getValueFromEnv('CALLBACK_URL'))
     );
 
 const envListToObject = list => ({
@@ -38,7 +35,7 @@ const envListToObject = list => ({
     tenant: list[2],
     templateId: list[3],
     did: list[4],
-    presentationCallbackURL: list[5]
+    callbackURL: list[5]
 });
 
 const getInputVariables =
@@ -47,31 +44,9 @@ const getInputVariables =
         getVariables
     );
 
-const getPresentationRequestAndDID = request =>
-    mergeAsyncEffects(
-        createPresentationRequest(request),
-        readDID(request)
-    );
-
-const createRequests = input =>
-    compose(
-        flatMap(message => sendMessage({...input, message: message})),
-        map(response => response.data.jwe),
-        flatMap(request => createJWE({...input, ...request, recipientDids: [input.recipientDid]})),
-        map(responses => ({request: responses[0].data?.request, didUrl: responses[1].data?.didDocument?.keyAgreement[0]?.id})),
-        getPresentationRequestAndDID
-    )(input);
-
-const createPushRequest = input =>
-    compose(
-        flatMap(accessToken => createRequests({...input, accessToken: accessToken})),
-        map(response => response.data?.access_token),
-        () => requestMATTRAccessToken({clientId: input.clientId, clientSecret: input.clientSecret}),
-    )();
-
 const createMATTRRequest = request =>
     compose(
-        flatMap(input => createPushRequest({...request, ...input})),
+        flatMap(input => pushAuthentication({...request, ...input})),
         eitherToAsyncEffect,
         getInputVariables
     )();
@@ -89,7 +64,7 @@ const getAuthenticationEffect = request =>
         map(passThrough(request => logger.debug(`DID Push Authentication Request: ${deepInspect(request)}`)))
     )(request);
 
-const pushAuthentication = request =>
+const triggerPushAuthentication = request =>
     getAuthenticationEffect(request)
     .trigger
     (errors => map(error => logger.error(`DID Push Authentication: ${error}`))(errors) &&
@@ -110,5 +85,5 @@ const pushAuthentication = request =>
 
 
 export {
-    pushAuthentication
+    triggerPushAuthentication
 };
