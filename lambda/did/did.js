@@ -1,9 +1,9 @@
 import { startsWith, lastOf, split, replace } from '@7urtle/lambda';
 
-import { triggerAuthentication } from './authentication';
-import { triggerPushAuthentication } from './pushAuthentication';
-import { processCallback } from './callback';
-import { checkStatus } from './status';
+import { triggerAuthentication } from './AuthenticationService';
+import { triggerPushAuthentication } from './PushAuthenticationService';
+import { checkStatus } from './StatusService';
+import { processCallback } from './CallbackService';
 
 const router = path => request => 
   (startsWith('/did/authentication')(path) && triggerAuthentication(lastOf(split('/')(path)))) ||

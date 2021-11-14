@@ -1,8 +1,8 @@
 import { passThrough, deepInspect, map, flatMap, compose, isNothing, Failure, Success, mergeEithers, eitherToAsyncEffect } from '@7urtle/lambda';
 import { authentication } from 'didauth';
 
-import logger from '../../src/logger';
-import { getValueFromEnv } from '../../effects/Environment';
+import logger from '../src/logger';
+import { getValueFromEnv } from './Environment';
 
 const getId = id => isNothing(id) ? Failure('ID url path is Nothing.') : Success(id);
 
@@ -34,7 +34,7 @@ const getInputVariables =
         getVariables
     );
 
-const getAuthenticationEffect =
+const DIDAuthentication =
     compose(
         map(passThrough(url => logger.debug(`DID Authentication Redirect URL: ${deepInspect(url)}`))),
         flatMap(authentication),
@@ -43,20 +43,6 @@ const getAuthenticationEffect =
         getInputVariables,
     );
 
-const triggerAuthentication = id =>
-    getAuthenticationEffect(id)
-    .trigger
-    (errors => map(error => logger.error(`DID Authentication: ${error}`))(errors) && ({
-        statusCode: 500,
-        body: 'Internal Server Error'
-    }))
-    (result => ({
-        statusCode: 301,
-        headers: {
-            location: result
-        }
-    }));
-
 export {
-    triggerAuthentication
+    DIDAuthentication
 };
