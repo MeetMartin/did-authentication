@@ -34,14 +34,14 @@ const getInputVariables =
         getVariables
     );
 
-const DIDAuthentication =
+const DIDAuthentication = id =>
     compose(
         map(passThrough(url => logger.debug(`DID Authentication Redirect URL: ${deepInspect(url)}`))),
         flatMap(authentication),
         eitherToAsyncEffect,
         map(passThrough(input => logger.debug(`DID Authentication Input Variables: ${deepInspect(input)}`))),
         getInputVariables,
-    );
+    )(id);
 
 export {
     DIDAuthentication

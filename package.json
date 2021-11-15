@@ -32,7 +32,7 @@
     "babel-plugin-styled-components": "^1.13.3",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^9.1.0",
-    "didauth": "^1.1.0",
+    "didauth": "^1.1.1",
     "dotenv": "^10.0.0",
     "faunadb": "^4.4.1",
     "file-loader": "^6.2.0",
