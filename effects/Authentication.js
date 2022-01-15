@@ -8,13 +8,13 @@ const getId = id => isNothing(id) ? Failure('ID url path is Nothing.') : Success
 
 const getVariables = id =>
     mergeEithers(
-        getValueFromEnv('CLIENT_ID'),
-        getValueFromEnv('CLIENT_SECRET'),
-        getValueFromEnv('TENANT'),
-        getValueFromEnv('TEMPLATE_ID'),
+        getValueFromEnv('MATTR_CLIENT_ID'),
+        getValueFromEnv('MATTR_CLIENT_SECRET'),
+        getValueFromEnv('MATTR_TENANT'),
+        getValueFromEnv('PRESENTATION_TEMPLATE_ID'),
         getValueFromEnv('VERIFIER_DID'),
         (map(url => `${url}/did/callback`)(getValueFromEnv('ngrok')))
-        .orElse(() => getValueFromEnv('CALLBACK_URL')),
+        .orElse(() => getValueFromEnv('DIDAUTH_CALLBACK_URL')),
         getId(id)
     );
 

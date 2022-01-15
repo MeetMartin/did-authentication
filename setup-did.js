@@ -8,9 +8,9 @@ import { createPresentationTemplate } from './effects/Presentation';
 
 const getEnvironmentVariables = () =>
     mergeEithers(
-        getValueFromEnv('CLIENT_ID'),
-        getValueFromEnv('CLIENT_SECRET'),
-        getValueFromEnv('TENANT')
+        getValueFromEnv('MATTR_CLIENT_ID'),
+        getValueFromEnv('MATTR_CLIENT_SECRET'),
+        getValueFromEnv('MATTR_TENANT')
     );
 
 const envListToObject = list => ({
@@ -54,6 +54,6 @@ main()
     (isNothing(result[1]) && logger.error('No Template ID found in the server response.')) ||
     logger.info(`
 VERIFIER_DID=${result[0]}
-TEMPLATE_ID=${result[1]}
+PRESENTATION_TEMPLATE_ID=${result[1]}
 Save these as environment variables.
 `));
