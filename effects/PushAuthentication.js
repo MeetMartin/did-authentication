@@ -55,7 +55,7 @@ const createPushAuthentication = request =>
 const DIDPushAuthentication = request =>
     compose(
         map(passThrough(() => logger.debug('DID Push Authentication Success.'))),
-        flatMap(did => createPushAuthentication({recipientDid: did, requestId: request.challengeId})),
+        flatMap(did => createPushAuthentication({recipientDid: did, challengeId: request.challengeId})),
         map(response => response.data.did),
         flatMap(() => getDIDByUserName(request.userName)),
         validateRequest,

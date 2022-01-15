@@ -25,7 +25,7 @@ const envListToObject = list => ({
     templateId: list[3],
     did: list[4],
     callbackURL: list[5],
-    requestId: list[6]
+    challengeId: list[6]
 });
 
 const getInputVariables =
