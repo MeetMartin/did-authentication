@@ -1,8 +1,11 @@
-import { AsyncEffect, isEqual, Maybe, map } from '@7urtle/lambda';
+import { AsyncEffect, isEqual, Maybe, map, replace } from '@7urtle/lambda';
 import axios from 'axios';
 
-const api_url = isEqual('development')(process.env.NODE_ENV) ? 'http://localhost:5000' : '/.netlify/functions';
-
+const api_url =
+    isEqual('development')(process.env.NODE_ENV)
+    ? replace('5000')('8080')(window.location.origin)
+    : '/.netlify/functions';
+    
 const getToFunction = path => headers =>
     map(response => Maybe.of(response.data))
     (

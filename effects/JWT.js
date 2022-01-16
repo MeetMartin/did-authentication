@@ -14,7 +14,7 @@ import jwt from 'jsonwebtoken';
 
 import { getValueFromEnv } from './Environment';
 
-const getJWTPrivateKeyFromEnv = () => getValueFromEnv('JWT_PRIVATE_KEY');
+const getJWTPrivateKeyFromEnv = () => getValueFromEnv('JWT_SECRET');
 
 const sign = data => key => Either.try(() => jwt.sign(data, key));
 
