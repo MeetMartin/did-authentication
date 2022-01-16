@@ -6,6 +6,8 @@ import logger from '../src/logger';
 import { handler as DIDHandler } from './did/did';
 import { handler as UserHandler } from './user/user';
 
+const CORSOrigin = process.env.CODESPACE_NAME ? `https://${process.env.CODESPACE_NAME}-8080.githubpreview.dev` : 'http://localhost:8080';
+
 /**
  * Turns node HTTP request into event object expected by Netlify function handler
  * 
@@ -89,7 +91,7 @@ const setupWithNgrok = compose(
  */
  const addCORSForLocalDevelopment = response => ({
     ...response,
-    'Access-Control-Allow-Origin': 'http://localhost:8080',
+    'Access-Control-Allow-Origin': CORSOrigin,
     'Access-Control-Request-Method': 'POST, OPTIONS, GET, HEAD, DELETE, PATCH',
     'Access-Control-Allow-Methods': 'POST, OPTIONS, GET, HEAD, DELETE, PATCH',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization'
@@ -176,7 +178,7 @@ const optionsAPI = request =>
         ...request,
         status: 204,
         allow: 'POST, OPTIONS, GET, HEAD, DELETE, PATCH',
-        'Access-Control-Allow-Origin': 'http://localhost:8080',
+        'Access-Control-Allow-Origin': CORSOrigin,
         'Access-Control-Request-Method': 'POST, OPTIONS, GET, HEAD, DELETE, PATCH',
         'Access-Control-Allow-Methods': 'POST, OPTIONS, GET, HEAD, DELETE, PATCH',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization'
