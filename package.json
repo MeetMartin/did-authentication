@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "5 Easy Steps To Abandon Redux For The Remarkable React Hooks",
   "main": "index.js",
+  "engines": {
+    "node": ">=16"
+  },
   "scripts": {
     "dev": "webpack serve --progress --open --mode development --config webpack.development.config.js",
     "maintain": "npm install & npm update && npm audit fix --force && npm run build-all",
@@ -38,7 +41,7 @@
     "file-loader": "^6.2.0",
     "html-loader": "^2.1.2",
     "html-webpack-plugin": "^5.5.0",
-    "image-webpack-loader": "^3.3.1",
+    "image-webpack-loader": "^8.1.0",
     "jsonwebtoken": "^8.5.1",
     "ngrok": "^4.2.2",
     "nodemon": "^2.0.15",
