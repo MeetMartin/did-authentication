@@ -1,7 +1,7 @@
 import { passThrough, deepInspect, isEqual, isNothing, map, flatMap, compose, Failure, Success, validateEithers, eitherToAsyncEffect } from '@7urtle/lambda';
 
 import logger from '../src/logger';
-import { getClient, createRecord, getFaunaSecretFromEnv } from './Fauna';
+import { getClient, createDocument, getFaunaSecretFromEnv } from './Fauna';
 
 const validateRequest =
     validateEithers(
@@ -12,7 +12,7 @@ const validateRequest =
 
 const storeSuccessfulSignIn = request =>
     compose(
-        flatMap(client => createRecord({client: client, data: request, collection: 'signins'})),
+        flatMap(client => createDocument({client: client, data: request, collection: 'signins'})),
         eitherToAsyncEffect,
         flatMap(getClient),
         getFaunaSecretFromEnv

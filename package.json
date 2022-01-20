@@ -10,6 +10,7 @@
     "dev": "webpack serve --progress --open --mode development --config webpack.development.config.js",
     "maintain": "npm install & npm update && npm audit fix --force && npm run build-all",
     "setup-did": "node -r @babel/register -r dotenv/config setup-did.js",
+    "setup-fauna": "node -r @babel/register -r dotenv/config setup-fauna.js",
     "functions": "nodemon -r @babel/register -r dotenv/config -w lambda -w effects lambda/functions.js",
     "build-did": "webpack --progress --mode production --config webpack.functions.did.config.js",
     "build-user": "webpack --progress --mode production --config lambda/webpack.functions.user.config.js",

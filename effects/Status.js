@@ -1,7 +1,7 @@
 import { passThrough, deepInspect, isNothing, isLessThan, isEqual, startsWith, Either, eitherToAsyncEffect, validateEithers, map, flatMap, compose } from '@7urtle/lambda';
 
 import logger from '../src/logger';
-import { getRecordByIndex, getClient, getFaunaSecretFromEnv } from './Fauna';
+import { getDocumentByIndex, getClient, getFaunaSecretFromEnv } from './Fauna';
 import { getJWTPrivateKeyFromEnv, sign } from './JWT';
 
 const validateRequest = request =>
@@ -18,7 +18,7 @@ const validateSignIn =
 
 const getSignInByChallengeId = data =>
     compose (
-        flatMap(client => getRecordByIndex({ client: client, data: data, index: 'signins_by_challengeid' })),
+        flatMap(client => getDocumentByIndex({ client: client, data: data, index: 'signins_by_challengeid' })),
         eitherToAsyncEffect,
         flatMap(getClient),
         getFaunaSecretFromEnv

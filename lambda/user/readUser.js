@@ -1,10 +1,10 @@
 import { passThrough, deepInspect, eitherToAsyncEffect, map, flatMap, compose, isEqual } from '@7urtle/lambda';
 
 import logger from '../../src/logger';
-import { getRecordByIndex, getClient, getFaunaSecretFromEnv } from '../../effects/Fauna';
+import { getDocumentByIndex, getClient, getFaunaSecretFromEnv } from '../../effects/Fauna';
 
 const getUserByDID = data => client =>
-    getRecordByIndex({
+    getDocumentByIndex({
         client: client,
         data: data,
         index: 'users_by_did'

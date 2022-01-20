@@ -1,10 +1,10 @@
 import { passThrough, deepInspect, eitherToAsyncEffect, map, flatMap, compose } from '@7urtle/lambda';
 
 import logger from '../../src/logger';
-import { deleteRecordByIndex, getClient, getFaunaSecretFromEnv } from '../../effects/Fauna';
+import { deleteDocumentByIndex, getClient, getFaunaSecretFromEnv } from '../../effects/Fauna';
 
 const deleteUserByDID = data => client =>
-    deleteRecordByIndex({
+    deleteDocumentByIndex({
         client: client,
         data: data,
         index: 'users_by_did'

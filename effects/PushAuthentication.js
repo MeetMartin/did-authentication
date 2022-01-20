@@ -2,7 +2,7 @@ import { passThrough, deepInspect, map, flatMap, compose, isNothing, Failure, Su
 import { pushAuthentication } from 'didauth';
 
 import logger from '../src/logger';
-import { getRecordByIndex, getClient, getFaunaSecretFromEnv } from './Fauna';
+import { getDocumentByIndex, getClient, getFaunaSecretFromEnv } from './Fauna';
 import { getValueFromEnv } from './Environment';
 
 const validateRequest =
@@ -39,7 +39,7 @@ const getInputVariables =
 
 const getDIDByUserName = data =>
     compose(
-        flatMap(client => getRecordByIndex({ client: client, data: data, index: 'did_by_username' })),
+        flatMap(client => getDocumentByIndex({ client: client, data: data, index: 'did_by_username' })),
         eitherToAsyncEffect,
         flatMap(getClient),
         getFaunaSecretFromEnv

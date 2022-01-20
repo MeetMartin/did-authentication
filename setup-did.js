@@ -39,14 +39,14 @@ const getPresentationTemplateAndVerifierDID = env =>
         () => requestMATTRAccessToken({clientId: env.clientId, clientSecret: env.clientSecret})
     )();
 
-const main =
+const setupDID =
     compose(
         flatMap(getPresentationTemplateAndVerifierDID),
         eitherToAsyncEffect,
         getInputVariables
     );
 
-main()
+setupDID()
 .trigger
 (map(logger.error))
 (result =>
