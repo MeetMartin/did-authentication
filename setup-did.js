@@ -53,7 +53,9 @@ setupDID()
     (isNothing(result[0]) && logger.error('No DID found in the server response.')) ||
     (isNothing(result[1]) && logger.error('No Template ID found in the server response.')) ||
     logger.info(`
+
 VERIFIER_DID=${result[0]}
 PRESENTATION_TEMPLATE_ID=${result[1]}
+
 Save these as environment variables.
 `));
