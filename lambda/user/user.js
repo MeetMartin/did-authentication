@@ -1,7 +1,7 @@
 import { isNothing, substr, flatMap, compose, Either, either, lowerCaseOf } from '@7urtle/lambda';
 
 import logger from '../../src/logger';
-import { verify, getJWTPrivateKeyFromEnv } from '../../effects/JWT';
+import { verify, getJWTSecretFromEnv } from '../../effects/JWT';
 import { createUser } from './createUser';
 import { readUser } from './readUser';
 import { deleteUser } from './deleteUser';
@@ -16,7 +16,7 @@ const getToken = substr(300)(7);
 const authorize = event =>
     compose(
         flatMap(verify(getToken(event.headers?.authorization))),
-        flatMap(getJWTPrivateKeyFromEnv),
+        flatMap(getJWTSecretFromEnv),
         getJWT
     )(event);
 

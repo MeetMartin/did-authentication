@@ -12,10 +12,10 @@ const createUserInFauna = requestData => did =>
         eitherToAsyncEffect,
         flatMap(getClient),
         getFaunaSecretFromEnv
-    );
+    )();
 
 const createUser = requestData => did =>
-    createUserInFauna(requestData)(did)()
+    createUserInFauna(requestData)(did)
     .trigger
     (error =>
         isEqual('Creating Fauna Document: BadRequest: instance not unique')(error + '')

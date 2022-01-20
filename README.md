@@ -19,12 +19,11 @@ YouTube Video:
 You will need to sign up with MATTR and Fauna to obtain their credentials. MATTR provides all the API necessary for working with
 decentralized identifiers and Fauna is used for database storing sign in and user information.
 
-You will need .env file. You can find the template for it in .env_template
+You will need .env file. You can find the template for it in .env_template and more details instructions are bellow.
 
-Apart from installing packages you will also need to do some setup with MATTR to obtain your own DID Key and DID Presentation template
-which is currently done through:
+Install your npm packages:
 ```
-$ npm run setup-did
+$ npm install
 ```
 
 To run backend simulating Netlify functions:
@@ -47,21 +46,17 @@ Once you sign up with https://mattr.global, put your credentials in .env in MATT
 
 To setup your PRESENTATION_TEMPLATE_ID and VERIFIER_DID, execute `npm run setup-did`.
 
-JWT_SECRET is a random strign used for JWT symetric encryption.
+To setup JWT_SECRET, CRYPTO_IV, and CRYPTO_KEY, run `npm run setup-secrets`.
 
 FAUNA_SECRET is a secret used to access https://fauna.com/ for data storage.
 
 DIDAUTH_CALLBACK_URL is used only in production to set callback URL for DID Authentication for presentation request. It is not required when running locally or in GitHub Codespaces.
 
-## Creating `collections` and `indexes` in **fauna**
+## Creating collections and index in fauna
 
-1) Collections
-   1) users
-   2) signins
-2) Indexes
-   1) collection `signins` -> signins_by_challengeid -> term(challengeId), unique
-   2) collection `users` -> did_by_username ->term(userName), unique
-   3) collection `users` -> users_by_did -> term(did), unique
+Signing up for https://fauna.com/ for data storage (possible free account) and create a first database to get FAUNA_SECRET environment variable.
+
+With FAUNA_SECRET ready, you can just run `npm run setup-fauna` and the script will setup collections and indexes for you.
 
 ## Setup for Netlify
 

@@ -4,6 +4,12 @@ import { pushAuthentication } from 'didauth';
 import logger from '../src/logger';
 import { getDocumentByIndex, getClient, getFaunaSecretFromEnv } from './Fauna';
 import { getValueFromEnv } from './Environment';
+import { decrypt, getEncryptionSecretsFromEnv } from './Encryption';
+
+const getDencryptedDID = did => compose(
+        flatMap(decrypt(did)),
+        getEncryptionSecretsFromEnv
+    )();
 
 const validateRequest =
     validateEithers(
@@ -55,7 +61,8 @@ const createPushAuthentication = request =>
 const DIDPushAuthentication = request =>
     compose(
         map(passThrough(() => logger.debug('DID Push Authentication Success.'))),
-        flatMap(did => createPushAuthentication({recipientDid: did, challengeId: request.challengeId})),
+        flatMap(decryptedDID => createPushAuthentication({recipientDid: decryptedDID, challengeId: request.challengeId})),
+        flatMap(did => eitherToAsyncEffect(getDencryptedDID(did))),
         map(response => response.data.did),
         flatMap(() => getDIDByUserName(request.userName)),
         validateRequest,

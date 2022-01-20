@@ -2,6 +2,14 @@ import { passThrough, deepInspect, isEqual, isNothing, map, flatMap, compose, Fa
 
 import logger from '../src/logger';
 import { getClient, createDocument, getFaunaSecretFromEnv } from './Fauna';
+import { encrypt, getEncryptionSecretsFromEnv } from './Encryption';
+
+const encryptDID = request =>
+    compose(
+        map(holder => ({ ...request, holder: holder })),
+        flatMap(encrypt(request.holder)),
+        getEncryptionSecretsFromEnv
+    )();
 
 const validateRequest =
     validateEithers(
@@ -21,8 +29,11 @@ const storeSuccessfulSignIn = request =>
 const SignIn = request =>
     compose(
         map(passThrough(() => logger.debug('DID Authentication Callback Request Stored In Fauna.'))),
-        flatMap(() => storeSuccessfulSignIn(request)),
+        flatMap(storeSuccessfulSignIn),
         eitherToAsyncEffect,
+        map(passThrough(request => logger.debug(`DID Authentication Callback Request 3: ${deepInspect(request)}`))),
+        flatMap(() => encryptDID(request)),
+        map(passThrough(request => logger.debug(`DID Authentication Callback Request 2: ${deepInspect(request)}`))),
         validateRequest,
         map(passThrough(request => logger.debug(`DID Authentication Callback Request: ${deepInspect(request)}`))),
     )(request);
