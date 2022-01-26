@@ -11,7 +11,7 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, 'functions/did'),
         filename: 'did.js',
-        libraryTarget: 'commonjs'
+        libraryTarget: 'commonjs2'
     },
     target: 'node',
     module: {
