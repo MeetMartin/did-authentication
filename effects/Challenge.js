@@ -1,5 +1,5 @@
 import { passThrough, map, flatMap, compose, eitherToAsyncEffect, deepInspect } from '@7urtle/lambda';
-import shortid from 'shortid';
+import { nanoid } from 'nanoid';
 
 import { getDocumentByIndex, createDocument, getClient, getFaunaSecretFromEnv } from './Fauna.js';
 import logger from '../src/logger.js';
@@ -11,7 +11,7 @@ const addChallengeSecretToInput = input =>
             callbackURL: input.callbackURL + '/' + secret,
             challengeSecret: secret
         })
-    )(shortid.generate());
+    )(nanoid());
 
 const saveChallenge = request =>
     compose(

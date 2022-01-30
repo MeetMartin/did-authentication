@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import shortid from 'shortid';
+import { nanoid } from 'nanoid';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 
@@ -19,7 +19,7 @@ const ErrorParagraph = styled.p`
 const SignUpPage = () => {
     const { state, actions } = useContext(StoreContext);
 
-    const [challengeId, setChallengeId] = useState(shortid.generate());
+    const [challengeId, setChallengeId] = useState(nanoid());
     const [timedOutStatusCheck, setTimedOutStatusCheck] = useState(false);
 
     const history = useHistory();
