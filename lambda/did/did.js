@@ -1,15 +1,17 @@
 import { startsWith, lastOf, split, replace } from '@7urtle/lambda';
 
-import { triggerAuthentication } from './AuthenticationService';
-import { triggerPushAuthentication } from './PushAuthenticationService';
-import { checkStatus } from './StatusService';
-import { processCallback } from './CallbackService';
+import { triggerAuthentication } from './AuthenticationService.js';
+import { triggerPushAuthentication } from './PushAuthenticationService.js';
+import { checkStatus } from './StatusService.js';
+import { processCallback } from './CallbackService.js';
+
+const endOfPath = path => lastOf(split('/')(path));
 
 const router = path => request => 
-  (startsWith('/did/authentication')(path) && triggerAuthentication(lastOf(split('/')(path)))) ||
+  (startsWith('/did/authentication')(path) && triggerAuthentication(endOfPath(path))) ||
   (startsWith('/did/push-authentication')(path) && triggerPushAuthentication(request && JSON.parse(request))) ||
-  (startsWith('/did/callback')(path) && processCallback(request && JSON.parse(request))) ||
-  (startsWith('/did/status')(path) && checkStatus(lastOf(split('/')(path)))) ||
+  (startsWith('/did/callback')(path) && processCallback(request && ({...JSON.parse(request), challengeSecret: endOfPath(path)}))) ||
+  (startsWith('/did/status')(path) && checkStatus(endOfPath(path))) ||
   ({
     statusCode: 404,
     body: 'Not Found'

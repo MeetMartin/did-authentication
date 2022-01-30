@@ -44,11 +44,22 @@ const createSigninsByChallengIDIndex = client => createIndexIfItDoesntExist({
         serialized: true
     }
 });
+const createChallengesByChallengIDIndex = client => createIndexIfItDoesntExist({
+    client: client,
+    name: 'challenges_by_challengeid',
+    source: 'challenges',
+    params: {
+        terms: [ { field: ['data', 'challengeId'] } ],
+        unique: true,
+        serialized: true
+    }
+});
 const createAllIndexes = client =>
     mergeAsyncEffects(
         createDIDByUsernameIndex(client),
         createUsersByDIDIndex(client),
-        createSigninsByChallengIDIndex(client)
+        createSigninsByChallengIDIndex(client),
+        createChallengesByChallengIDIndex(client)
     );
 
 const createCollectionsAndIndexes = client =>

@@ -1,8 +1,19 @@
-import { passThrough, deepInspect, isEqual, isNothing, map, flatMap, compose, Failure, Success, validateEithers, eitherToAsyncEffect } from '@7urtle/lambda';
+import { passThrough, deepInspect, isEqual, isNothing, map, flatMap, compose, Failure, Success, validateEithers, eitherToAsyncEffect, AsyncEffect } from '@7urtle/lambda';
 
 import logger from '../src/logger';
 import { getClient, createDocument, getFaunaSecretFromEnv } from './Fauna';
 import { encrypt, getEncryptionSecretsFromEnv } from './Encryption';
+import { getChallenge } from './Challenge';
+
+const validateChallenge = request =>
+    compose(
+        flatMap(challenge =>
+            isEqual(challenge.challengeSecret)(request.challengeSecret)
+            ? AsyncEffect.of(_ => resolve => resolve(request))
+            : AsyncEffect.of(reject => _ => reject('Invalid challenge secret.'))
+        ),
+        request => getChallenge(request.challengeId)
+    )(request);
 
 const encryptDID = request =>
     compose(
@@ -13,9 +24,11 @@ const encryptDID = request =>
 
 const validateRequest =
     validateEithers(
-        request => isNothing(request.challengeId) ? Failure(`Request challengeId is Nothing.`) : Success(request),
-        request => isNothing(request.holder) ? Failure(`Request holder is Nothing.`) : Success(request),
-        request => isEqual('true')(request.verified) ? Failure(`Request verified is not true.`) : Success(request)
+        request => isNothing(request) ? Failure(`Request is Nothing.`) : Success(request),
+        request => isNothing(request?.challengeId) ? Failure(`Request challengeId is Nothing.`) : Success(request),
+        request => isNothing(request?.challengeSecret) ? Failure(`Request challengeSecret is Nothing.`) : Success(request),
+        request => isNothing(request?.holder) ? Failure(`Request holder is Nothing.`) : Success(request),
+        request => isEqual('true')(request?.verified) ? Failure(`Request verified is not true.`) : Success(request)
     );
 
 const storeSuccessfulSignIn = request =>
@@ -30,10 +43,9 @@ const SignIn = request =>
     compose(
         map(passThrough(() => logger.debug('DID Authentication Callback Request Stored In Fauna.'))),
         flatMap(storeSuccessfulSignIn),
+        flatMap(() => eitherToAsyncEffect(encryptDID(request))),
+        flatMap(validateChallenge),
         eitherToAsyncEffect,
-        map(passThrough(request => logger.debug(`DID Authentication Callback Request 3: ${deepInspect(request)}`))),
-        flatMap(() => encryptDID(request)),
-        map(passThrough(request => logger.debug(`DID Authentication Callback Request 2: ${deepInspect(request)}`))),
         validateRequest,
         map(passThrough(request => logger.debug(`DID Authentication Callback Request: ${deepInspect(request)}`))),
     )(request);

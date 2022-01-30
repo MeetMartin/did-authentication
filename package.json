@@ -4,7 +4,7 @@
   "description": "5 Easy Steps To Abandon Redux For The Remarkable React Hooks",
   "main": "index.js",
   "engines": {
-    "node": ">=16"
+    "node": ">=12.16"
   },
   "scripts": {
     "dev": "webpack serve --progress --open --mode development --config webpack.development.config.js",
@@ -39,7 +39,7 @@
     "copy-webpack-plugin": "^9.1.0",
     "didauth": "^1.2.0",
     "dotenv": "^10.0.0",
-    "faunadb": "^4.4.1",
+    "faunadb": "^4.4.2",
     "file-loader": "^6.2.0",
     "html-loader": "^2.1.2",
     "html-webpack-plugin": "^5.5.0",

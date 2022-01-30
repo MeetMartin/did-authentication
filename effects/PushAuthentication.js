@@ -1,10 +1,11 @@
 import { passThrough, deepInspect, map, flatMap, compose, isNothing, Failure, Success, validateEithers, mergeEithers, eitherToAsyncEffect } from '@7urtle/lambda';
 import { pushAuthentication } from 'didauth';
 
-import logger from '../src/logger';
-import { getDocumentByIndex, getClient, getFaunaSecretFromEnv } from './Fauna';
-import { getValueFromEnv } from './Environment';
-import { decrypt, getEncryptionSecretsFromEnv } from './Encryption';
+import logger from '../src/logger.js';
+import { getDocumentByIndex, getClient, getFaunaSecretFromEnv } from './Fauna.js';
+import { getValueFromEnv } from './Environment.js';
+import { decrypt, getEncryptionSecretsFromEnv } from './Encryption.js';
+import { saveChallenge, addChallengeSecretToInput } from './Challenge.js';
 
 const getDencryptedDID = did => compose(
         flatMap(decrypt(did)),
@@ -39,6 +40,7 @@ const envListToObject = list => ({
 
 const getInputVariables =
     compose(
+        map(addChallengeSecretToInput),
         map(envListToObject),
         getVariables
     );
@@ -53,7 +55,8 @@ const getDIDByUserName = data =>
 
 const createPushAuthentication = request =>
     compose(
-        flatMap(input => pushAuthentication({...request, ...input})),
+        flatMap(pushAuthentication),
+        flatMap(input => saveChallenge({...request, ...input})),
         eitherToAsyncEffect,
         getInputVariables
     )();

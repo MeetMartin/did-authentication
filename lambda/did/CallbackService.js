@@ -7,8 +7,8 @@ const processCallback = request =>
     SignIn(request)
     .trigger
     (errors => map(error => logger.error(`DID Callback: ${error}`))(errors) && ({
-        statusCode: 500,
-        body: 'Internal Server Error'
+        statusCode: 404,
+        body: 'Not Found'
     }))
     (() => ({
         statusCode: 204

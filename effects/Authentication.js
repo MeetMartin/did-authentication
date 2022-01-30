@@ -1,8 +1,9 @@
 import { passThrough, deepInspect, map, flatMap, compose, isNothing, Failure, Success, mergeEithers, eitherToAsyncEffect } from '@7urtle/lambda';
 import { authentication } from 'didauth';
 
-import logger from '../src/logger';
-import { getValueFromEnv } from './Environment';
+import logger from '../src/logger.js';
+import { getValueFromEnv } from './Environment.js';
+import { saveChallenge, addChallengeSecretToInput } from './Challenge.js';
 
 const getId = id => isNothing(id) ? Failure('ID url path is Nothing.') : Success(id);
 
@@ -30,6 +31,7 @@ const envListToObject = list => ({
 
 const getInputVariables =
     compose(
+        map(addChallengeSecretToInput),
         map(envListToObject),
         getVariables
     );
@@ -38,6 +40,7 @@ const DIDAuthentication = id =>
     compose(
         map(passThrough(url => logger.debug(`DID Authentication Redirect URL: ${deepInspect(url)}`))),
         flatMap(authentication),
+        flatMap(saveChallenge),
         eitherToAsyncEffect,
         map(passThrough(input => logger.debug(`DID Authentication Input Variables: ${deepInspect(input)}`))),
         getInputVariables,
