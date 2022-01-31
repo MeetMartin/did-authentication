@@ -31,7 +31,7 @@ const validateRequest =
         request => isEqual('true')(request?.verified) ? Failure(`Request verified is not true.`) : Success(request)
     );
 
-const storeSuccessfulSignIn = request =>
+const storeSuccessfulAuthentication = request =>
     compose(
         flatMap(client => createDocument({client: client, data: request, collection: 'signins'})),
         eitherToAsyncEffect,
@@ -39,10 +39,10 @@ const storeSuccessfulSignIn = request =>
         getFaunaSecretFromEnv
     )();
 
-const SignIn = request =>
+const Callback = request =>
     compose(
         map(passThrough(() => logger.debug('DID Authentication Callback Request Stored In Fauna.'))),
-        flatMap(storeSuccessfulSignIn),
+        flatMap(storeSuccessfulAuthentication),
         flatMap(() => eitherToAsyncEffect(encryptDID(request))),
         flatMap(validateChallenge),
         eitherToAsyncEffect,
@@ -51,5 +51,5 @@ const SignIn = request =>
     )(request);
 
 export {
-    SignIn
+    Callback
 };

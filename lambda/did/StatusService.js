@@ -1,7 +1,7 @@
 import { isArray, isUndefined, map } from '@7urtle/lambda';
 
-import logger from '../../src/logger';
-import { checkSignInStatus } from "../../effects/Status";
+import logger from '../../src/logger.js';
+import { checkAuthenticationStatus } from "../../effects/Status.js";
 
 const statusErrorToReasonMap = new Map([
     ['Getting Fauna Record By Index: NotFound: instance not found', 'You did not scan the QR code using the wallet.'],
@@ -20,7 +20,7 @@ const statusErrorToReason = error =>
     );
 
 const checkStatus = request =>
-    checkSignInStatus(request)
+    checkAuthenticationStatus(request)
     .trigger
     (errors => map(error => logger.error(`Signins status: ${error}`))(errors) &&
         ({statusCode: 200, body: JSON.stringify({ verified: false, reason: statusErrorToReason(errors) })})

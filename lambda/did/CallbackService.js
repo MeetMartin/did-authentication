@@ -1,10 +1,10 @@
 import { map } from '@7urtle/lambda';
 
 import logger from '../../src/logger';
-import { SignIn } from "../../effects/Callback";
+import { Callback } from "../../effects/Callback";
 
 const processCallback = request =>
-    SignIn(request)
+    Callback(request)
     .trigger
     (errors => map(error => logger.error(`DID Callback: ${error}`))(errors) && ({
         statusCode: 404,
