@@ -1,20 +1,30 @@
-import { passThrough, deepInspect, map, flatMap, compose, isNothing, Failure, Success, validateEithers, mergeEithers, eitherToAsyncEffect } from '@7urtle/lambda';
+import { passThrough, deepInspect, map, flatMap, compose, isNothing, Either, Failure, Success, validateEithers, mergeEithers, eitherToAsyncEffect } from '@7urtle/lambda';
 import { pushAuthentication } from 'didauth';
+import { nanoid } from 'nanoid';
 
 import logger from '../src/logger.js';
 import { getDocumentByIndex, getClient, getFaunaSecretFromEnv } from './Fauna.js';
 import { getValueFromEnv } from './Environment.js';
 import { decrypt, getEncryptionSecretsFromEnv } from './Encryption.js';
-import { saveChallenge, addChallengeSecretToInput } from './Challenge.js';
+import { saveChallenge } from './Challenge.js';
 
-const getDencryptedDID = did => compose(
+const getDencryptedDID = did =>
+    compose(
         flatMap(decrypt(did)),
         getEncryptionSecretsFromEnv
     )();
 
+const getCallbackURL = () =>
+    (
+        map
+        (url => `${url}/did/callback`)
+        (getValueFromEnv('ngrok'))
+    )
+    .orElse(() => getValueFromEnv('DIDAUTH_CALLBACK_URL'));
+
 const validateRequest =
     validateEithers(
-        request => isNothing(request?.challengeId) ? Failure('Request challengeId is Nothing.') : Success(request),
+        request => isNothing(request?.requestId) ? Failure('Request requestId is Nothing.') : Success(request),
         request => isNothing(request?.userName) ? Failure('Request userName is Nothing.') : Success(request)
     );
 
@@ -25,8 +35,8 @@ const getVariables = () =>
         getValueFromEnv('MATTR_TENANT'),
         getValueFromEnv('PRESENTATION_TEMPLATE_ID'),
         getValueFromEnv('VERIFIER_DID'),
-        (map(url => `${url}/did/callback`)(getValueFromEnv('ngrok')))
-        .orElse(() => getValueFromEnv('DIDAUTH_CALLBACK_URL'))
+        getCallbackURL(),
+        Either.try(nanoid)
     );
 
 const envListToObject = list => ({
@@ -35,12 +45,12 @@ const envListToObject = list => ({
     tenant: list[2],
     templateId: list[3],
     did: list[4],
-    callbackURL: list[5]
+    callbackURL: list[5],
+    challengeId: list[6]
 });
 
-const getInputVariables =
+const getEnvironmentVariables =
     compose(
-        map(addChallengeSecretToInput),
         map(envListToObject),
         getVariables
     );
@@ -56,18 +66,20 @@ const getDIDByUserName = data =>
 const createPushAuthentication = request =>
     compose(
         flatMap(pushAuthentication),
-        flatMap(input => saveChallenge({...request, ...input})),
+        flatMap(saveChallenge),
         eitherToAsyncEffect,
-        getInputVariables
+        map(inputs => ({ ...inputs, ...request })),
+        getEnvironmentVariables
     )();
 
 const DIDPushAuthentication = request =>
     compose(
         map(passThrough(() => logger.debug('DID Push Authentication Success.'))),
-        flatMap(decryptedDID => createPushAuthentication({recipientDid: decryptedDID, challengeId: request.challengeId})),
+        flatMap(recipientDid => createPushAuthentication({ ... request, recipientDid: recipientDid })),
         flatMap(did => eitherToAsyncEffect(getDencryptedDID(did))),
         map(response => response.data.did),
         flatMap(() => getDIDByUserName(request.userName)),
+        eitherToAsyncEffect,
         validateRequest,
         map(passThrough(request => logger.debug(`DID Push Authentication Request: ${deepInspect(request)}`)))
     )(request);

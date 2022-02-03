@@ -11,14 +11,14 @@ const validateRequest = request =>
 
 const validateSignIn =
     validateEithers(
-        request => isNothing(request?.data?.holder) ? Either.Failure(`Sign in holder is Nothing.`) : Either.Success(request),
-        request => isNothing(request?.data?.verified) || isEqual('true')(request.data.verified) ? Either.Failure(`Sign in verified is Nothing or not true.`) : Either.Success(request),
-        request => isNothing(request?.ts) || isLessThan((Date.now() * 1000 - request.ts) / 60000000)(5) ? Either.Failure(`Sign in age is Nothing or more than 5 minutes.`) : Either.Success(request)
+        request => isNothing(request?.data?.holder) ? Either.Failure(`Authentication holder is Nothing.`) : Either.Success(request),
+        request => isNothing(request?.data?.verified) || isEqual('true')(request.data.verified) ? Either.Failure(`Authentication verified is Nothing or not true.`) : Either.Success(request),
+        request => isNothing(request?.ts) || isLessThan((Date.now() * 1000 - request.ts) / 60000000)(5) ? Either.Failure(`Authentication age is Nothing or more than 5 minutes.`) : Either.Success(request)
     );
 
-const getAuthenticationByChallengeId = data =>
+const getAuthenticationByRequestId = data =>
     compose (
-        flatMap(client => getDocumentByIndex({ client: client, data: data, index: 'signins_by_challengeid' })),
+        flatMap(client => getDocumentByIndex({ client: client, data: data, index: 'authentications_by_requestid' })),
         eitherToAsyncEffect,
         flatMap(getClient),
         getFaunaSecretFromEnv
@@ -35,7 +35,7 @@ const checkAuthenticationStatus = request =>
     compose(
         map(passThrough(response => logger.debug(`DID Authentication Status Response: ${deepInspect(response)}`))),
         flatMap(response => eitherToAsyncEffect(getJWT(response))),
-        flatMap(() => getAuthenticationByChallengeId(request)),
+        flatMap(() => getAuthenticationByRequestId(request)),
         eitherToAsyncEffect,
         validateRequest,
         map(passThrough(request => logger.debug(`DID Authentication Status Request: ${deepInspect(request)}`)))

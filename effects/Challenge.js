@@ -1,23 +1,13 @@
 import { passThrough, map, flatMap, compose, eitherToAsyncEffect, deepInspect } from '@7urtle/lambda';
-import { nanoid } from 'nanoid';
 
 import { getDocumentByIndex, createDocument, getClient, getFaunaSecretFromEnv } from './Fauna.js';
 import logger from '../src/logger.js';
 
-const addChallengeSecretToInput = input =>
-    (secret =>
-        ({
-            ...input,
-            callbackURL: input.callbackURL + '/' + secret,
-            challengeSecret: secret
-        })
-    )(nanoid());
-
 const saveChallenge = request =>
     compose(
         map(() => request),
-        map(passThrough(() => logger.debug(`Stored Challenge in Fauna: ${deepInspect({ challengeId: request.challengeId, challengeSecret: request.challengeSecret })}.`))),
-        flatMap(client => createDocument({client: client, data: { challengeId: request.challengeId, challengeSecret: request.challengeSecret }, collection: 'challenges'})),
+        map(passThrough(() => logger.debug(`Stored Challenge in Fauna: ${deepInspect({ requestId: request.requestId, challengeId: request.challengeId })}.`))),
+        flatMap(client => createDocument({client: client, data: { requestId: request.requestId, challengeId: request.challengeId }, collection: 'challenges'})),
         eitherToAsyncEffect,
         flatMap(getClient),
         getFaunaSecretFromEnv
@@ -34,7 +24,6 @@ const getChallenge = challengeId =>
     )();    
 
 export {
-    addChallengeSecretToInput,
     saveChallenge,
     getChallenge
 };

@@ -1,4 +1,4 @@
 import { getToFunction, postToFunction } from './NetlifyFunction';
 
-export const getStatus = challengeId => getToFunction(`/did/status/${challengeId}`)();
+export const getStatus = requestId => getToFunction(`/did/status/${requestId}`)();
 export const getSignInByName = payload => postToFunction(`/did/push-authentication/`)(payload)();

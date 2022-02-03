@@ -5,7 +5,7 @@ import { checkAuthenticationStatus } from "../../effects/Status.js";
 
 const statusErrorToReasonMap = new Map([
     ['Getting Fauna Record By Index: NotFound: instance not found', 'You did not scan the QR code using the wallet.'],
-    ['Sign in age is Nothing or more than 5 minutes.', 'Sign in was verified through wallet more than 5 minutes ago. Reload the page.']
+    ['Authentication age is Nothing or more than 5 minutes.', 'Authentication was verified through wallet more than 5 minutes ago. Reload the page.']
 ]);
 
 const statusErrorToReason = error =>
@@ -22,7 +22,7 @@ const statusErrorToReason = error =>
 const checkStatus = request =>
     checkAuthenticationStatus(request)
     .trigger
-    (errors => map(error => logger.error(`Signins status: ${error}`))(errors) &&
+    (errors => map(error => logger.error(`Authentication status: ${error}`))(errors) &&
         ({statusCode: 200, body: JSON.stringify({ verified: false, reason: statusErrorToReason(errors) })})
     )
     (result => ({statusCode: 200, body: JSON.stringify({ verified: true, bearer: result })}));

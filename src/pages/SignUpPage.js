@@ -19,7 +19,7 @@ const ErrorParagraph = styled.p`
 const SignUpPage = () => {
     const { state, actions } = useContext(StoreContext);
 
-    const [challengeId, setChallengeId] = useState(nanoid());
+    const [requestId, setRequestId] = useState(nanoid());
     const [timedOutStatusCheck, setTimedOutStatusCheck] = useState(false);
 
     const history = useHistory();
@@ -28,7 +28,7 @@ const SignUpPage = () => {
         actions.receiveSignUpError(); // clear errors when page is opened
 
         const statusCheckInterval = setInterval(() => {
-            !timedOutStatusCheck && actions.requestSignUp(challengeId);
+            !timedOutStatusCheck && actions.requestSignUp(requestId);
         }, 5000);
 
         const statusCheckTimeout = setTimeout(() => {
@@ -84,7 +84,7 @@ const SignUpPage = () => {
                             Claim Your Account<br />
                             With MATTR Wallet
                         </h2>
-                        <AuthenticationQRCode QRInput={challengeId} />
+                        <AuthenticationQRCode QRInput={requestId} />
                     </>
                 }
                 <p>

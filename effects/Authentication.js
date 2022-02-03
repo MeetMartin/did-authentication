@@ -1,22 +1,30 @@
-import { passThrough, deepInspect, map, flatMap, compose, isNothing, Failure, Success, mergeEithers, eitherToAsyncEffect } from '@7urtle/lambda';
+import { passThrough, deepInspect, map, flatMap, compose, isNothing, Either, Failure, Success, mergeEithers, eitherToAsyncEffect } from '@7urtle/lambda';
 import { authentication } from 'didauth';
+import { nanoid } from 'nanoid';
 
 import logger from '../src/logger.js';
 import { getValueFromEnv } from './Environment.js';
-import { saveChallenge, addChallengeSecretToInput } from './Challenge.js';
+import { saveChallenge } from './Challenge.js';
 
-const getId = id => isNothing(id) ? Failure('ID url path is Nothing.') : Success(id);
+const getId = requestId => isNothing(requestId) ? Failure('ID url path is Nothing.') : Success(requestId);
+const getCallbackURL = () =>
+    (
+        map
+        (url => `${url}/did/callback`)
+        (getValueFromEnv('ngrok'))
+    )
+    .orElse(() => getValueFromEnv('DIDAUTH_CALLBACK_URL'));
 
-const getVariables = id =>
+const getVariables = requestId =>
     mergeEithers(
         getValueFromEnv('MATTR_CLIENT_ID'),
         getValueFromEnv('MATTR_CLIENT_SECRET'),
         getValueFromEnv('MATTR_TENANT'),
         getValueFromEnv('PRESENTATION_TEMPLATE_ID'),
         getValueFromEnv('VERIFIER_DID'),
-        (map(url => `${url}/did/callback`)(getValueFromEnv('ngrok')))
-        .orElse(() => getValueFromEnv('DIDAUTH_CALLBACK_URL')),
-        getId(id)
+        getCallbackURL(),
+        getId(requestId),
+        Either.try(nanoid)
     );
 
 const envListToObject = list => ({
@@ -26,17 +34,17 @@ const envListToObject = list => ({
     templateId: list[3],
     did: list[4],
     callbackURL: list[5],
-    challengeId: list[6]
+    requestId: list[6],
+    challengeId: list[7]
 });
 
 const getInputVariables =
     compose(
-        map(addChallengeSecretToInput),
         map(envListToObject),
         getVariables
     );
 
-const DIDAuthentication = id =>
+const DIDAuthentication = requestId =>
     compose(
         map(passThrough(url => logger.debug(`DID Authentication Redirect URL: ${deepInspect(url)}`))),
         flatMap(authentication),
@@ -44,7 +52,7 @@ const DIDAuthentication = id =>
         eitherToAsyncEffect,
         map(passThrough(input => logger.debug(`DID Authentication Input Variables: ${deepInspect(input)}`))),
         getInputVariables,
-    )(id);
+    )(requestId);
 
 export {
     DIDAuthentication

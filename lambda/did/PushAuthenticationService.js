@@ -1,7 +1,7 @@
 import { isEqual, map } from '@7urtle/lambda';
 
-import logger from '../../src/logger';
-import { DIDPushAuthentication } from "../../effects/PushAuthentication";
+import logger from '../../src/logger.js';
+import { DIDPushAuthentication } from '../../effects/PushAuthentication.js';
 
 const triggerPushAuthentication = request =>
     DIDPushAuthentication(request)

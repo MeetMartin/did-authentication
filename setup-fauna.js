@@ -1,15 +1,15 @@
-import { passThrough, eitherToAsyncEffect, mergeAsyncEffects, map, flatMap, compose, identity } from '@7urtle/lambda';
+import { eitherToAsyncEffect, mergeAsyncEffects, map, flatMap, compose, identity } from '@7urtle/lambda';
 
-import logger from './src/logger';
-import { createIndexIfItDoesntExist, createCollectionIfItDoesntExist, getClient, getFaunaSecretFromEnv } from './effects/Fauna';
+import logger from './src/logger.js';
+import { createIndexIfItDoesntExist, createCollectionIfItDoesntExist, getClient, getFaunaSecretFromEnv } from './effects/Fauna.js';
 
 const createNewCollection = name => client => createCollectionIfItDoesntExist({client: client, params: { name: name }});
-const createSigninsCollection = createNewCollection('signins');
+const createAuthenticationsCollection = createNewCollection('authentications');
 const createUsersCollection = createNewCollection('users');
 const createChallengesCollection = createNewCollection('challenges');
 const createAllCollections = client =>
     mergeAsyncEffects(
-        createSigninsCollection(client),
+        createAuthenticationsCollection(client),
         createUsersCollection(client),
         createChallengesCollection(client)
     );
@@ -34,17 +34,17 @@ const createUsersByDIDIndex = client => createIndexIfItDoesntExist({
         serialized: true
     }
 });
-const createSigninsByChallengIDIndex = client => createIndexIfItDoesntExist({
+const createAuthenticationsByRequestIDIndex = client => createIndexIfItDoesntExist({
     client: client,
-    name: 'signins_by_challengeid',
-    source: 'signins',
+    name: 'authentications_by_requestid',
+    source: 'authentications',
     params: {
-        terms: [ { field: ['data', 'challengeId'] } ],
+        terms: [ { field: ['data', 'requestId'] } ],
         unique: true,
         serialized: true
     }
 });
-const createChallengesByChallengIDIndex = client => createIndexIfItDoesntExist({
+const createChallengesByChallengeIDIndex = client => createIndexIfItDoesntExist({
     client: client,
     name: 'challenges_by_challengeid',
     source: 'challenges',
@@ -58,21 +58,20 @@ const createAllIndexes = client =>
     mergeAsyncEffects(
         createDIDByUsernameIndex(client),
         createUsersByDIDIndex(client),
-        createSigninsByChallengIDIndex(client),
-        createChallengesByChallengIDIndex(client)
+        createAuthenticationsByRequestIDIndex(client),
+        createChallengesByChallengeIDIndex(client)
     );
 
 const createCollectionsAndIndexes = client =>
     compose(
-        map(data => logger.info(`Created Indexes In Fauna: ${data}.`)),
+        map(() => logger.info(`Created Indexes In Fauna.`)),
         flatMap(() => createAllIndexes(client)),
-        map(data => logger.info(`Created Collections In Fauna: ${data}.`)),
+        map(() => logger.info(`Created Collections In Fauna.`)),
         () => createAllCollections(client),
     )();
 
 const setupFauna =
     compose(
-        map(passThrough(() => logger.info(`Created Collections and Indexes In Fauna.`))),
         flatMap(createCollectionsAndIndexes),
         eitherToAsyncEffect,
         flatMap(getClient),
