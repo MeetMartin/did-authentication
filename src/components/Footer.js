@@ -16,7 +16,7 @@ const FooterDiv = styled.div`
 
 const Footer = () => 
     <FooterDiv>
-        7urtle JavaScript, 2021. No cookies. No analytics. No tracking.
+        7urtle JavaScript, 2022. No cookies. No analytics. No tracking.
     </FooterDiv>;
 
 export default Footer;
