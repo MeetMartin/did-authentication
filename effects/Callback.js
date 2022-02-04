@@ -5,7 +5,7 @@ import { getClient, createDocument, getFaunaSecretFromEnv } from './Fauna.js';
 import { encrypt, getEncryptionSecretsFromEnv } from './Encryption.js';
 import { getChallenge } from './Challenge.js';
 
-const validateChallengeSecret = request =>
+const validateChallenge = request =>
     compose(
         flatMap(challenge =>
             isEqual(challenge.challengeSecret)(request.challengeSecret)
@@ -50,7 +50,7 @@ const Callback = request =>
         map(passThrough(() => logger.debug('DID Authentication Callback Request Stored In Fauna.'))),
         flatMap(storeSuccessfulAuthentication),
         flatMap(request => eitherToAsyncEffect(encryptDID(request))),
-        flatMap(validateChallengeSecret),
+        flatMap(validateChallenge),
         eitherToAsyncEffect,
         validateRequest,
         map(passThrough(request => logger.debug(`DID Authentication Callback Request: ${deepInspect(request)}`))),
