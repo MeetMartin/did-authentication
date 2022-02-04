@@ -34,12 +34,12 @@ const createUsersByDIDIndex = client => createIndexIfItDoesntExist({
         serialized: true
     }
 });
-const createAuthenticationsByRequestIDIndex = client => createIndexIfItDoesntExist({
+const createAuthenticationsByChallengeIDIndex = client => createIndexIfItDoesntExist({
     client: client,
-    name: 'authentications_by_requestid',
+    name: 'authentications_by_challengeid',
     source: 'authentications',
     params: {
-        terms: [ { field: ['data', 'requestId'] } ],
+        terms: [ { field: ['data', 'challengeId'] } ],
         unique: true,
         serialized: true
     }
@@ -58,7 +58,7 @@ const createAllIndexes = client =>
     mergeAsyncEffects(
         createDIDByUsernameIndex(client),
         createUsersByDIDIndex(client),
-        createAuthenticationsByRequestIDIndex(client),
+        createAuthenticationsByChallengeIDIndex(client),
         createChallengesByChallengeIDIndex(client)
     );
 

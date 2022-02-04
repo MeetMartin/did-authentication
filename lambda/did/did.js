@@ -10,7 +10,7 @@ const endOfPath = path => lastOf(split('/')(path));
 const router = path => request => 
   (startsWith('/did/authentication')(path) && triggerAuthentication(endOfPath(path))) ||
   (startsWith('/did/push-authentication')(path) && triggerPushAuthentication(request && JSON.parse(request))) ||
-  (startsWith('/did/callback')(path) && processCallback(request && JSON.parse(request))) ||
+  (startsWith('/did/callback')(path) && processCallback(request && ({ ...JSON.parse(request), challengeSecret: endOfPath(path) }))) ||
   (startsWith('/did/status')(path) && checkStatus(endOfPath(path))) ||
   ({
     statusCode: 404,

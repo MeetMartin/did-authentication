@@ -1,4 +1,4 @@
-import { passThrough, deepInspect, isNothing, isLessThan, isEqual, startsWith, Either, eitherToAsyncEffect, validateEithers, map, flatMap, compose } from '@7urtle/lambda';
+import { passThrough, deepInspect, isNothing, isLessThan, isEqual, Either, eitherToAsyncEffect, validateEithers, map, flatMap, compose } from '@7urtle/lambda';
 
 import logger from '../src/logger.js';
 import { getDocumentByIndex, getClient, getFaunaSecretFromEnv } from './Fauna.js';
@@ -18,7 +18,7 @@ const validateSignIn =
 
 const getAuthenticationByRequestId = data =>
     compose (
-        flatMap(client => getDocumentByIndex({ client: client, data: data, index: 'authentications_by_requestid' })),
+        flatMap(client => getDocumentByIndex({ client: client, data: data, index: 'authentications_by_challengeid' })),
         eitherToAsyncEffect,
         flatMap(getClient),
         getFaunaSecretFromEnv

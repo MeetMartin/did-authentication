@@ -6,7 +6,7 @@ import logger from '../src/logger.js';
 import { getValueFromEnv } from './Environment.js';
 import { saveChallenge } from './Challenge.js';
 
-const getId = requestId => isNothing(requestId) ? Failure('ID url path is Nothing.') : Success(requestId);
+const getId = challengeId => isNothing(challengeId) ? Failure('ID url path is Nothing.') : Success(challengeId);
 const getCallbackURL = () =>
     (
         map
@@ -15,7 +15,7 @@ const getCallbackURL = () =>
     )
     .orElse(() => getValueFromEnv('DIDAUTH_CALLBACK_URL'));
 
-const getVariables = requestId =>
+const getVariables = challengeId =>
     mergeEithers(
         getValueFromEnv('MATTR_CLIENT_ID'),
         getValueFromEnv('MATTR_CLIENT_SECRET'),
@@ -23,7 +23,7 @@ const getVariables = requestId =>
         getValueFromEnv('PRESENTATION_TEMPLATE_ID'),
         getValueFromEnv('VERIFIER_DID'),
         getCallbackURL(),
-        getId(requestId),
+        getId(challengeId),
         Either.try(nanoid)
     );
 
@@ -34,17 +34,18 @@ const envListToObject = list => ({
     templateId: list[3],
     did: list[4],
     callbackURL: list[5],
-    requestId: list[6],
-    challengeId: list[7]
+    challengeId: list[6],
+    challengeSecret: list[7]
 });
 
 const getInputVariables =
     compose(
+        map(inputs => ({ ...inputs, callbackURL: inputs.callbackURL + '/' + inputs.challengeSecret })),
         map(envListToObject),
         getVariables
     );
 
-const DIDAuthentication = requestId =>
+const DIDAuthentication = challengeId =>
     compose(
         map(passThrough(url => logger.debug(`DID Authentication Redirect URL: ${deepInspect(url)}`))),
         flatMap(authentication),
@@ -52,7 +53,7 @@ const DIDAuthentication = requestId =>
         eitherToAsyncEffect,
         map(passThrough(input => logger.debug(`DID Authentication Input Variables: ${deepInspect(input)}`))),
         getInputVariables,
-    )(requestId);
+    )(challengeId);
 
 export {
     DIDAuthentication

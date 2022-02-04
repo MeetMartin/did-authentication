@@ -6,8 +6,8 @@ import logger from '../src/logger.js';
 const saveChallenge = request =>
     compose(
         map(() => request),
-        map(passThrough(() => logger.debug(`Stored Challenge in Fauna: ${deepInspect({ requestId: request.requestId, challengeId: request.challengeId })}.`))),
-        flatMap(client => createDocument({client: client, data: { requestId: request.requestId, challengeId: request.challengeId }, collection: 'challenges'})),
+        map(passThrough(() => logger.debug(`Stored Challenge in Fauna: ${deepInspect({ challengeId: request.challengeId, challengeSecret: request.challengeSecret })}.`))),
+        flatMap(client => createDocument({client: client, data: { challengeId: request.challengeId, challengeSecret: request.challengeSecret }, collection: 'challenges'})),
         eitherToAsyncEffect,
         flatMap(getClient),
         getFaunaSecretFromEnv

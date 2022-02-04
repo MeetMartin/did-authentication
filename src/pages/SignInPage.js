@@ -20,7 +20,7 @@ const ErrorParagraph = styled.p`
 const SignInPage = () => {
     const { state, actions } = useContext(StoreContext);
 
-    const [requestId, setRequestId] = useState(nanoid());
+    const [challengeId, setRequestId] = useState(nanoid());
     const [timedOutStatusCheck, setTimedOutStatusCheck] = useState(false);
 
     const history = useHistory();
@@ -31,7 +31,7 @@ const SignInPage = () => {
         actions.receiveSignUpError(); // clear errors when page is opened
 
         const statusCheckInterval = setInterval(() => {
-            !timedOutStatusCheck && actions.requestSignIn(requestId);
+            !timedOutStatusCheck && actions.requestSignIn(challengeId);
         }, 5000);
 
         const statusCheckTimeout = setTimeout(() => {
@@ -45,7 +45,7 @@ const SignInPage = () => {
     }, []);
 
     useEffect(() => {
-        state.userName && !state.authenticated && actions.requestSignInByName({requestId: requestId, userName: state.userName});
+        state.userName && !state.authenticated && actions.requestSignInByName({challengeId: challengeId, userName: state.userName});
     }, [state.userName]);
     
     useEffect(() => {
@@ -84,7 +84,7 @@ const SignInPage = () => {
                     <h2>by user name</h2>
                     <UserNameForm buttonText='Sign In' />
                     <h2>{isMobile ? 'or' : 'or by a QR code'}</h2>
-                    <AuthenticationQRCode QRInput={requestId} />
+                    <AuthenticationQRCode QRInput={challengeId} />
                     <p>
                         Not a member yet? <Link to='/sign-up'>Sign up</Link>.
                     </p>

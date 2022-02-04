@@ -24,7 +24,7 @@ const getCallbackURL = () =>
 
 const validateRequest =
     validateEithers(
-        request => isNothing(request?.requestId) ? Failure('Request requestId is Nothing.') : Success(request),
+        request => isNothing(request?.challengeId) ? Failure('Request challengeId is Nothing.') : Success(request),
         request => isNothing(request?.userName) ? Failure('Request userName is Nothing.') : Success(request)
     );
 
@@ -46,11 +46,12 @@ const envListToObject = list => ({
     templateId: list[3],
     did: list[4],
     callbackURL: list[5],
-    challengeId: list[6]
+    challengeSecret: list[6]
 });
 
 const getEnvironmentVariables =
     compose(
+        map(inputs => ({ ...inputs, callbackURL: inputs.callbackURL + '/' + inputs.challengeSecret })),
         map(envListToObject),
         getVariables
     );
@@ -75,7 +76,7 @@ const createPushAuthentication = request =>
 const DIDPushAuthentication = request =>
     compose(
         map(passThrough(() => logger.debug('DID Push Authentication Success.'))),
-        flatMap(recipientDid => createPushAuthentication({ ... request, recipientDid: recipientDid })),
+        flatMap(recipientDid => createPushAuthentication({ ...request, recipientDid: recipientDid })),
         flatMap(did => eitherToAsyncEffect(getDencryptedDID(did))),
         map(response => response.data.did),
         flatMap(() => getDIDByUserName(request.userName)),
