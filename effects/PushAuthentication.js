@@ -76,7 +76,7 @@ const createPushAuthentication = request =>
 const DIDPushAuthentication = request =>
     compose(
         map(passThrough(() => logger.debug('DID Push Authentication Success.'))),
-        flatMap(recipientDid => createPushAuthentication({ ...request, recipientDid: recipientDid })),
+        flatMap(decryptedDID => createPushAuthentication({ ...request, recipientDid: decryptedDID })),
         flatMap(did => eitherToAsyncEffect(getDencryptedDID(did))),
         map(response => response.data.did),
         flatMap(() => getDIDByUserName(request.userName)),
