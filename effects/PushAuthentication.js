@@ -8,7 +8,7 @@ import { getValueFromEnv } from './Environment.js';
 import { decrypt, getEncryptionSecretsFromEnv } from './Encryption.js';
 import { saveChallenge } from './Challenge.js';
 
-const getDencryptedDID = did =>
+const getDecryptedDID = did =>
     compose(
         flatMap(decrypt(did)),
         getEncryptionSecretsFromEnv
@@ -49,12 +49,12 @@ const envListToObject = list => ({
     challengeSecret: list[6]
 });
 
-const getEnvironmentVariables =
+const getEnvironmentVariables = request =>
     compose(
-        map(inputs => ({ ...inputs, callbackURL: inputs.callbackURL + '/' + inputs.challengeSecret })),
+        map(inputs => ({ ...inputs, ...request, callbackURL: inputs.callbackURL + '/' + inputs.challengeSecret })),
         map(envListToObject),
         getVariables
-    );
+    )();
 
 const getDIDByUserName = data =>
     compose(
@@ -64,20 +64,13 @@ const getDIDByUserName = data =>
         getFaunaSecretFromEnv
     )();
 
-const createPushAuthentication = request =>
-    compose(
-        flatMap(pushAuthentication),
-        flatMap(saveChallenge),
-        eitherToAsyncEffect,
-        map(inputs => ({ ...inputs, ...request })),
-        getEnvironmentVariables
-    )();
-
 const DIDPushAuthentication = request =>
     compose(
         map(passThrough(() => logger.debug('DID Push Authentication Success.'))),
-        flatMap(decryptedDID => createPushAuthentication({ ...request, recipientDid: decryptedDID })),
-        flatMap(did => eitherToAsyncEffect(getDencryptedDID(did))),
+        flatMap(pushAuthentication),
+        flatMap(saveChallenge),
+        flatMap(decryptedDID => eitherToAsyncEffect(getEnvironmentVariables({ ...request, recipientDid: decryptedDID }))),
+        flatMap(did => eitherToAsyncEffect(getDecryptedDID(did))),
         map(response => response.data.did),
         flatMap(() => getDIDByUserName(request.userName)),
         eitherToAsyncEffect,

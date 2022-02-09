@@ -16,7 +16,7 @@ const validateSignIn =
         request => isNothing(request?.ts) || isLessThan((Date.now() * 1000 - request.ts) / 60000000)(5) ? Either.Failure(`Authentication age is Nothing or more than 5 minutes.`) : Either.Success(request)
     );
 
-const getAuthenticationByRequestId = data =>
+const getAuthenticationByChallengeId = data =>
     compose (
         flatMap(client => getDocumentByIndex({ client: client, data: data, index: 'authentications_by_challengeid' })),
         eitherToAsyncEffect,
@@ -35,7 +35,7 @@ const checkAuthenticationStatus = request =>
     compose(
         map(passThrough(response => logger.debug(`DID Authentication Status Response: ${deepInspect(response)}`))),
         flatMap(response => eitherToAsyncEffect(getJWT(response))),
-        flatMap(() => getAuthenticationByRequestId(request)),
+        flatMap(() => getAuthenticationByChallengeId(request)),
         eitherToAsyncEffect,
         validateRequest,
         map(passThrough(request => logger.debug(`DID Authentication Status Request: ${deepInspect(request)}`)))
