@@ -1,10 +1,10 @@
 import { isNothing, compose, map, flatMap, eitherToAsyncEffect, mergeEithers, mergeAsyncEffects } from '@7urtle/lambda';
 
-import logger from './src/logger';
-import { getValueFromEnv } from './effects/Environment';
-import { requestMATTRAccessToken } from './effects/MATTR';
-import { createDID } from './effects/DID';
-import { createPresentationTemplate } from './effects/Presentation';
+import logger from './src/logger.js';
+import { getValueFromEnv } from './effects/Environment.js';
+import { requestAccessToken } from './effects/AccessToken.js';
+import { createDID } from './effects/DID.js';
+import { createPresentationTemplate } from './effects/Presentation.js';
 
 const getEnvironmentVariables = () =>
     mergeEithers(
@@ -36,7 +36,7 @@ const getPresentationTemplateAndVerifierDID = env =>
         map(responses => [responses[0].data.did, responses[1].data.id]),
         flatMap(token => getDIDs({tenant: env.tenant, accessToken: token})),
         map(response => response.data?.access_token),
-        () => requestMATTRAccessToken({clientId: env.clientId, clientSecret: env.clientSecret})
+        () => requestAccessToken({clientId: env.clientId, clientSecret: env.clientSecret})
     )();
 
 const setupDID =
